@@ -1,0 +1,31 @@
+{
+    "N":100,
+
+    "N_SUB_SWARM":50,
+
+    "N_ARCHIVE_MAX":150,
+
+    "GENERATION_MAX":200,
+
+    "INERTIA":0.9,
+
+    "INERTIA_INITIAL":0.9,
+
+    "INERTIA_END":0.4,
+
+    "SELF_AWARENESS":2.0,
+
+    "SOCIAL_AWARENESS":2.0,
+
+    "RIVAL_AWARENESS":2.0,
+
+    "SELF_AWARENESS_OF_PREDATOR":2.0,
+
+    "LOCAL_AWARENESS":2.0,
+
+    "DAMP":1.0,
+
+    "VMAX_INITIAL":2,
+
+    "VMAX_END":5
+}
