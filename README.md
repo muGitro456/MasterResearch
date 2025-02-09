@@ -1,2 +1,2 @@
 # MasterResearch
-Group of programs used in master's research
+修士研究で使用したプログラム群
