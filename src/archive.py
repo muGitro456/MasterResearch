@@ -74,7 +74,7 @@ class Archive:
             selected = self.pos_gb[0] if np.random.rand() > 0.5 else self.pos_gb[1]
             return selected
         else:
-            weights = np.array( [cd[j] for j in range(len(cd)) if np.abs(cd[j]) != np.Inf] )
+            weights = np.array( [cd[j] for j in range(len(cd)) if np.abs(cd[j]) != np.inf] )
             p_weights = np.array([weights[j] / np.sum(weights) for j in range(len(weights))])
             chosen = np.random.choice(weights, size=1, p=p_weights)
             leader = np.argwhere(cd == chosen)
@@ -89,9 +89,9 @@ class Archive:
         
         if NA != 1:
             for k in range(self.K):
-                front_up = np.append(fit_gb_sorted[1:, k], np.Inf)
+                front_up = np.append(fit_gb_sorted[1:, k], np.inf)
                 #print(front_up)
-                front_down = np.append(np.Inf, fit_gb_sorted[:-1, k])
+                front_down = np.append(np.inf, fit_gb_sorted[:-1, k])
                 #print(front_down)
                 cd = cd + np.abs(front_up - front_down) #/ (np.max(fit_gb_sorted[:, k]) - np.min(fit_gb_sorted[:, k])) # 2022/10/28追加　下駄をはかせる 11/6 下駄やめた
         #cd = cd / K # 目的関数の個数で割る
