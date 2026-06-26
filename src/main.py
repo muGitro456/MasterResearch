@@ -1,6 +1,6 @@
 # Pythonパッケージのインポート
 import numpy as np
-import datetime, sys, json, requests, time
+import datetime, sys, json, requests, time, os
 from tqdm import tqdm
 
 # 自作パッケージのインポート
@@ -94,7 +94,7 @@ def main(instruction):
 # PythonからLINEへ通知を送る関数
 # 参考にしたサイト: https://hiyokonoko.com/%E3%80%90%E5%88%9D%E5%BF%83%E8%80%85%E5%90%91%E3%81%91%E3%80%9110%E5%88%86%E3%81%A7%E3%81%A7%E3%81%8D%E3%82%8B%EF%BC%81python%E3%81%AE%E5%AE%9F%E8%A1%8C%E7%B5%90%E6%9E%9C%E3%82%92%E3%82%B9%E3%83%9E/862/
 def line_notify(message):
-    line_notify_token = 'YOUR_LINE_NOTIFY_TOKEN' # アクセストークン
+    line_notify_token = os.environ.get("LINE_NOTIFY_TOKEN") # アクセストークン
     line_notify_api = 'https://notify-api.line.me/api/notify'
     payload = {'message': message} # 引数として自由に入力することができます
     headers = {'Authorization': 'Bearer ' + line_notify_token}
