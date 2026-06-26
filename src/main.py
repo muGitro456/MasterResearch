@@ -7,7 +7,9 @@ from tqdm import tqdm
 from related import MOPSO, FPOMOPSO, SENIOR
 from proposed import MASTER_A, MASTER_B, MASTER_C
 from field import Problem
-import database as db
+import logger
+import metrics
+import record_writer
 
 # VScodeでは文字選択→Ctrl+Shift+Pでコマンドパレット→upperと入力で大文字にできる"
 sheet_name = "../プログラム実行記録管理シート.xlsx"  # Excelシートの名前
@@ -61,32 +63,33 @@ def main(instruction):
         print("N_SUBSWARM: ", param_dict["N_SUB_SWARM"])
 
     processing_time = np.zeros(TRIAL)
+    log_dir = ""
     for t in tqdm(range(TRIAL), desc="Trial     "):
         if int(METH_NUM) <= 3:
             algorithm = eval(METH_NAME)(param_dict, problem)
         else:
             algorithm = eval(METH_NAME)(param_dict, problem, topo_dict[TOPO_NUM])
-        
+
         start = time.time()
         archive = algorithm.simulation()
         processing_time[t] = time.time() - start
 
         numOfGBs[t] = archive.fit_gb.shape[0]
         cr[t] = archive.calc_cover_rate(archive.fit_gb.shape[0])
-    
-        if isDebugged:  # 粒子の動きを見たいときだけ(ファイルサイズがデカいから)
-            db.write4Debug('p', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
-            db.write4Debug('v', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
-            
+
+        if isDebugged:
+            logger.write4debug('p', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
+            logger.write4debug('v', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
+
         if isPlotted:
-            db.write4Plot(t + 1, (METH_NUM, FUNC_NUM), FUNC_NAME, METH_NAME, startTime)
+            log_dir = record_writer.write4plot(t + 1, (METH_NUM, FUNC_NUM), FUNC_NAME, METH_NAME, startTime)
 
     print("Finished!!")
     processing_time_ave = np.average(processing_time)
     print("平均実行時間は{}[s]".format(processing_time_ave))
     if isPlotted:
-        db.evaluation(db.new_dir_path_log, numOfGBs, cr)
-    # db.write_record(sheet_name, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
+        metrics.evaluation(log_dir, numOfGBs, cr)
+    record_writer.write_record(sheet_name, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
 
 # PythonからLINEへ通知を送る関数
 # 参考にしたサイト: https://hiyokonoko.com/%E3%80%90%E5%88%9D%E5%BF%83%E8%80%85%E5%90%91%E3%81%91%E3%80%9110%E5%88%86%E3%81%A7%E3%81%A7%E3%81%8D%E3%82%8B%EF%BC%81python%E3%81%AE%E5%AE%9F%E8%A1%8C%E7%B5%90%E6%9E%9C%E3%82%92%E3%82%B9%E3%83%9E/862/
