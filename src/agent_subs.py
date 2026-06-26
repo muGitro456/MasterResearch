@@ -1,6 +1,6 @@
 import numpy as np
 import copy, json
-import database as db
+import logger as db
 
 with open('./property/parameters.json', 'r') as f:
     param_dict = json.load(f)

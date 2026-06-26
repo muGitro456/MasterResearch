@@ -5,7 +5,7 @@ from agent_subs import SubSwarm, Neighborhood_C
 from topology import Topology
 from related import MOPSO
 from archive import Archive
-import database as db
+import logger as db
 
 class MASTER_A(MOPSO):
     def __init__(self, params, problem, topology_dict):
