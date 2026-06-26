@@ -4,7 +4,7 @@ from tqdm import tqdm
 from agent import Swarm, Predators, PredatorsSenior
 from field import SearchSpace
 from archive import Archive
-import database as db
+import logger as db
 
 class MOPSO:
     def __init__(self, params, problem):
