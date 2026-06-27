@@ -16,7 +16,7 @@ class SearchSpace:
         self.DAMP = params["DAMP"]
 
     def update_fit(self, x):
-        return self.fun(x).T
+        return self.fun(x)
     
     def check_boundaries(self, POS, VEL):
         for pos, vel in zip(POS, VEL):
@@ -85,7 +85,7 @@ class Problem:
                 self.lower = lower
                 self.K = 2
 
-            case "_":  # 多峰性問題を解く場合
+            case _:  # 多峰性問題を解く場合
                 F = self.multimodel_func(func_dict["name"], dimension)
                 f = lambda x : x[:, 0]
                 g = lambda x : 1 + F(x)
