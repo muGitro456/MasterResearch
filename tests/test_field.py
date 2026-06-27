@@ -14,7 +14,7 @@ class TestSearchSpaceUpdateFit:
         N, D = 5, 3
         pos = np.random.rand(N, D)
         fit = zdt2_field.update_fit(pos)
-        assert fit.shape == (2, N)
+        assert fit.shape == (N, 2)
 
 
 class TestSearchSpaceCheckBoundaries:

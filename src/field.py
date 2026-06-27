@@ -16,7 +16,7 @@ class SearchSpace:
         self.DAMP = params["DAMP"]
 
     def update_fit(self, x):
-        return self.fun(x)
+        return self.fun(x).T
     
     def check_boundaries(self, POS, VEL):
         for pos, vel in zip(POS, VEL):
