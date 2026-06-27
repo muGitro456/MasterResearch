@@ -48,14 +48,14 @@ class Archive:
                             pos_gb = np.vstack((pos_gb, pos[r]))
                             fit_gb = np.vstack((fit_gb, fit[r]))
                         NA += 1
-        
+
         while NA > self.NA_MAX:
-            cd = self.calc_crowding_distance()
+            cd = self.calc_crowding_distance(fit_gb[:NA, :])
             minIdx = np.argmin(cd)
             pos_gb = np.delete(pos_gb, minIdx, axis = 0)
             fit_gb = np.delete(fit_gb, minIdx, axis = 0)
             NA -= 1
-        
+
         return pos_gb[:NA, :], fit_gb[:NA, :]
 
     def update_archive(self, POS_current, FIT_current):
@@ -81,11 +81,13 @@ class Archive:
             #print(type(leader))
             return self.pos_gb[leader[0,0]]
     
-    def calc_crowding_distance(self):
-        NA = len(self.fit_gb)
+    def calc_crowding_distance(self, fit_gb=None):
+        if fit_gb is None:
+            fit_gb = self.fit_gb
+        NA = len(fit_gb)
         cd = np.zeros(NA)
-        indices_sorted = np.argsort(self.fit_gb[:,0]) # f1軸に対して昇順ソート
-        fit_gb_sorted = self.fit_gb[indices_sorted]
+        indices_sorted = np.argsort(fit_gb[:,0]) # f1軸に対して昇順ソート
+        fit_gb_sorted = fit_gb[indices_sorted]
         
         if NA != 1:
             for k in range(self.K):
