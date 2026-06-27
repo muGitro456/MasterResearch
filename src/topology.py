@@ -88,6 +88,6 @@ class Topology:
                     
                     relation[i] = edge
             case _:
-                edge = -1
+                relation = -1
                 print("ERROR: 名前が異なります.")
         return relation
