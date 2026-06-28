@@ -19,7 +19,6 @@ def swarm(field):
 
 @pytest.fixture
 def sub_swarms(swarm, field):
-    # N=10, N_SUB_SWARM=2 → N_SUB_PARTICLE=5
     subs = [SubSwarm(5, swarm, i, field) for i in range(2)]
     return subs
 
@@ -47,7 +46,7 @@ class TestSubSwarm:
         sub = SubSwarm(5, swarm, index=0, field=field)
         sub.FIT = np.zeros((5, field.K))
         sub.FIT_PB = np.ones((5, field.K))
-        sub.POS_PB = np.full((5, field.D), 999.0)  # sentinel: distinguishable from POS
+        sub.POS_PB = np.full((5, field.D), 999.0)
         original = sub.POS_PB.copy()
         sub.update_pb()
         assert not np.allclose(sub.POS_PB, original)
@@ -59,7 +58,7 @@ class TestSubSwarm:
         sub.POS = sub.POS[:1]
         sub.FIT = np.array([[0.0, 1.5]])
         sub.FIT_PB = np.array([[1.0, 1.0]])
-        sub.POS_PB = np.full((1, field.D), 999.0)  # sentinel: distinguishable from POS
+        sub.POS_PB = np.full((1, field.D), 999.0)
         old_pb = sub.POS_PB.copy()
         sub.update_pb()
         assert not np.allclose(sub.POS_PB, old_pb)

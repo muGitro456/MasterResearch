@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 from topology import Topology
 
 
@@ -22,7 +21,6 @@ class TestTopologySelectEdge:
     def test_normal_neumann(self):
         topo = Topology(N=25, N_SIZE=5, name="Neumann")
         assert len(topo.relation) == 25
-        # 中心粒子は自分自身
         assert topo.relation[0][0] == 0
 
     def test_normal_cylinder(self):

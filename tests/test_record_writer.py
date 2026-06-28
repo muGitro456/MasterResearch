@@ -64,7 +64,6 @@ class TestWriteRecord:
         mock_wb.save.assert_called_once_with('dummy.xlsx')
 
     def test_normal_finds_empty_row(self, mocker):
-        # 1行目に値あり → r += 1 (line 38) を通過し、2行目の None でbreak
         row1_cell = mocker.Mock()
         row1_cell.value = "existing_data"
         row2_cell = mocker.Mock()

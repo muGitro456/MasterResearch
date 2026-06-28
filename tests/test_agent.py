@@ -32,27 +32,23 @@ class TestSwarm:
         assert fit.shape == (5, field.K)
 
     def test_normal_update_pb_all_better(self, swarm):
-        # FITが全軸改善のケース → POS_PBが更新される
-        swarm.FIT = np.zeros((5, 2))           # (N, K) format: all zeros (best)
-        swarm.FIT_PB = np.ones((5, 2))         # (N, K) format: all ones (bad)
-        swarm.POS_PB = np.full((5, swarm.my_field.D), 999.0)  # clearly different from POS
+        swarm.FIT = np.zeros((5, 2))
+        swarm.FIT_PB = np.ones((5, 2))
+        swarm.POS_PB = np.full((5, swarm.my_field.D), 999.0)
         original_pos_pb = copy.deepcopy(swarm.POS_PB)
         swarm.update_pb()
-        # 少なくとも1粒子のPOS_PBが更新されている
         assert not np.allclose(swarm.POS_PB, original_pos_pb)
 
     def test_normal_update_pb_partial(self, swarm):
-        # FITが一部改善（anyはTrue、allはFalse）のケース → 確率的更新
-        np.random.seed(0)  # rand()=0.549 > 0.5 → 更新される
+        np.random.seed(0)
         swarm.N = 1
         swarm.POS = swarm.POS[:1]
         swarm.VEL = swarm.VEL[:1]
-        swarm.FIT = np.array([[0.0, 1.5]])      # (N=1, K=2): f1改善、f2悪化
+        swarm.FIT = np.array([[0.0, 1.5]])
         swarm.FIT_PB = np.array([[1.0, 1.0]])
-        swarm.POS_PB = np.full((1, swarm.my_field.D), 999.0)  # different from POS
+        swarm.POS_PB = np.full((1, swarm.my_field.D), 999.0)
         old_pb = swarm.POS_PB.copy()
         swarm.update_pb()
-        # seed=0 では rand()=0.549>0.5 → POS_PBが更新される
         assert not np.allclose(swarm.POS_PB, old_pb)
 
 

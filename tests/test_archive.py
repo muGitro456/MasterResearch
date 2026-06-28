@@ -1,17 +1,14 @@
 import numpy as np
-import pytest
 from archive import Archive
 
 
 def _make_arc_k2(na_max=10):
-    """K=2 の非優越解2点を持つアーカイブを返す"""
     pos = np.array([[0.0, 0.0], [1.0, 1.0]])
     fit = np.array([[0.0, 1.0], [1.0, 0.0]])
     return Archive(pos, fit, NA_MAX=na_max, D=2, K=2)
 
 
 def _make_arc_k3():
-    """K=3 の非優越解3点を持つアーカイブを返す"""
     pos = np.array([[1.0, 0.0], [0.0, 1.0], [0.0, 0.0]])
     fit = np.array([[0.0, 1.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 0.0]])
     return Archive(pos, fit, NA_MAX=10, D=2, K=3)
@@ -27,14 +24,12 @@ class TestArchiveMakeParetoFront:
         assert arc.fit_gb.shape == (3, 3)
 
     def test_normal_exceeds_na_max(self):
-        # 5非優越解、NA_MAX=3 → 混雑距離トリミングで3以下になる
         pos = np.array([[float(i), 0.0] for i in range(5)])
         fit = np.array([[float(i), float(4 - i)] for i in range(5)])
         arc = Archive(pos, fit, NA_MAX=3, D=2, K=2)
         assert arc.fit_gb.shape[0] <= 3
 
     def test_normal_k3_exceeds_na_max(self):
-        # K=3 かつ非優越解3点、NA_MAX=2 → lines 48-49 (vstack branch) を通過する
         pos = np.array([[1.0, 0.0], [0.0, 1.0], [0.0, 0.0]])
         fit = np.array([[0.0, 1.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 0.0]])
         arc = Archive(pos, fit, NA_MAX=2, D=2, K=3)
@@ -43,8 +38,6 @@ class TestArchiveMakeParetoFront:
 
 class TestArchiveUpdateArchive:
     def test_normal_does_not_update(self):
-        # 既知バグ: update_archive は make_pareto_front の戻り値を代入しないため
-        # fit_gb は呼び出し前後で変化しない
         arc = _make_arc_k2()
         original = arc.fit_gb.copy()
         arc.update_archive(
