@@ -44,7 +44,7 @@ class TestWrite4plot:
 
 
 class TestWriteRecord:
-    def test_normal(self, mocker):
+    def test_normal_saves_workbook(self, mocker):
         mock_cell = mocker.Mock()
         mock_cell.value = None
         mock_ws = mocker.Mock()

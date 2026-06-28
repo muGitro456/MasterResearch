@@ -24,7 +24,7 @@ def test_normal_returns_float():
 
 
 class TestMetricsDisplay:
-    def test_normal(self, capsys):
+    def test_normal_prints_average_and_maximum(self, capsys):
         pfs = ['a.csv', 'b.csv', 'c.csv']
         idx = np.array([0.5, 0.8, 0.3])
         metrics.display(pfs, idx)
@@ -53,7 +53,7 @@ class TestMetricsEvaluation:
 
 
 class TestMetricsRni:
-    def test_normal(self, mocker):
+    def test_normal_returns_complementary_tuple(self, mocker):
         mock_df1 = mocker.Mock()
         mock_df1.values = np.array([[0.0, 1.0], [0.5, 0.5], [1.0, 0.0]])
         mock_df2 = mocker.Mock()

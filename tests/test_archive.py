@@ -117,7 +117,7 @@ class TestArchiveCalcCoverRate:
 
 
 class TestArchiveUnionArchive:
-    def test_normal(self):
+    def test_normal_combines_arrays(self):
         arc = _make_arc_k2()
         pos1 = np.array([[0.0, 0.0]])
         fit1 = np.array([[0.0, 1.0]])

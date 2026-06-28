@@ -10,7 +10,7 @@ def zdt2_field(param_dict, zdt2_dict):
 
 
 class TestSearchSpaceUpdateFit:
-    def test_normal(self, zdt2_field):
+    def test_normal_returns_n_k_shape(self, zdt2_field):
         N, D = 5, 3
         pos = np.random.rand(N, D)
         fit = zdt2_field.update_fit(pos)

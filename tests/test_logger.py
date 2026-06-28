@@ -3,7 +3,7 @@ import logger
 
 
 class TestLoggerResetLog:
-    def test_normal(self):
+    def test_normal_clears_all_lists(self):
         logger.LOG_POS.append(np.ones((3, 2)))
         logger.LOG_VEL.append(np.ones((3, 2)))
         logger.LOG_FIT.append(np.ones((3, 2)))

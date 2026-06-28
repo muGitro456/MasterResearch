@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 sys.modules.setdefault('matplotlib', MagicMock())
 sys.modules.setdefault('matplotlib.pyplot', MagicMock())
 
-import graphDrawing  # noqa: E402
+import graphDrawing
 
 
 class TestRedraw:

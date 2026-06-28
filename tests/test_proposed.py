@@ -14,7 +14,7 @@ class TestMASTERASimulation:
 
 
 class TestMASTERAUnionNeighbors:
-    def test_normal(self, param_dict, zdt2_dict, ring5_topo_dict):
+    def test_normal_returns_2d_arrays(self, param_dict, zdt2_dict, ring5_topo_dict):
         np.random.seed(42)
         problem = Problem(zdt2_dict)
         algo = MASTER_A(param_dict, problem, ring5_topo_dict)

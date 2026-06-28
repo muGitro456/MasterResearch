@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 
 sys.modules.setdefault('requests', MagicMock())
 
-import numpy as np  # noqa: E402
-import main  # noqa: E402
+import numpy as np
+import main
 
 
 class TestXlsxIsOpen:
