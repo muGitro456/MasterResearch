@@ -85,7 +85,7 @@ class Problem:
                 self.lower = lower
                 self.K = 2
 
-            case "_":  # 多峰性問題を解く場合
+            case _:  # 多峰性問題を解く場合
                 F = self.multimodel_func(func_dict["name"], dimension)
                 f = lambda x : x[:, 0]
                 g = lambda x : 1 + F(x)
