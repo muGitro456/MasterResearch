@@ -77,7 +77,7 @@ def main(instruction):
         numOfGBs[t] = archive.fit_gb.shape[0]
         cr[t] = archive.calc_cover_rate(archive.fit_gb.shape[0])
 
-        if isDebugged:
+        if isDebugged:  # pragma: no cover
             logger.write4debug('p', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
             logger.write4debug('v', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
 
@@ -110,7 +110,7 @@ def xlsx_is_open(filepath: str) -> bool:
     else:
         return False
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     if not xlsx_is_open(sheet_name):
         instruction_set = ["691"]
         #instruction_set = ["27", "37", "47", "572", "573", "574", "575"]

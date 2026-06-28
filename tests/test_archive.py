@@ -33,6 +33,13 @@ class TestArchiveMakeParetoFront:
         arc = Archive(pos, fit, NA_MAX=3, D=2, K=2)
         assert arc.fit_gb.shape[0] <= 3
 
+    def test_normal_k3_exceeds_na_max(self):
+        # K=3 かつ非優越解3点、NA_MAX=2 → lines 48-49 (vstack branch) を通過する
+        pos = np.array([[1.0, 0.0], [0.0, 1.0], [0.0, 0.0]])
+        fit = np.array([[0.0, 1.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 0.0]])
+        arc = Archive(pos, fit, NA_MAX=2, D=2, K=3)
+        assert arc.fit_gb.shape[0] <= 2
+
 
 class TestArchiveUpdateArchive:
     def test_normal_does_not_update(self):
