@@ -7,6 +7,12 @@ LOG_VEL: list = []
 LOG_FIT: list = []
 
 
+def reset_log() -> None:
+    LOG_POS.clear()
+    LOG_VEL.clear()
+    LOG_FIT.clear()
+
+
 def store(var: np.ndarray, target: str) -> None:
     match target:
         case 'p':
