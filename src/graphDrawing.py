@@ -36,7 +36,7 @@ def redraw(dataFileName):
     #plt.legend(["FPO-MOPSO", "DFPO-MOPSO", "Proposed Method A", "Neumann", "Cylinder", "Hexagonal", "Grid"])
     plt.show()
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     numOfPF = int(input("出力したいパレートフロントの数を入力: "))
     pf_list = []
     

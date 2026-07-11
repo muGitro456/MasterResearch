@@ -64,11 +64,15 @@ def main(instruction):
 
     processing_time = np.zeros(TRIAL)
     log_dir = ""
+    _algorithm_map: dict[str, type] = {
+        "MOPSO": MOPSO, "FPOMOPSO": FPOMOPSO, "SENIOR": SENIOR,
+        "MASTER_A": MASTER_A, "MASTER_B": MASTER_B, "MASTER_C": MASTER_C,
+    }
     for t in tqdm(range(TRIAL), desc="Trial     "):
         if int(METH_NUM) <= 3:
-            algorithm = eval(METH_NAME)(param_dict, problem)
+            algorithm = _algorithm_map[METH_NAME](param_dict, problem)
         else:
-            algorithm = eval(METH_NAME)(param_dict, problem, topo_dict[TOPO_NUM])
+            algorithm = _algorithm_map[METH_NAME](param_dict, problem, topo_dict[TOPO_NUM])
 
         start = time.time()
         archive = algorithm.simulation()
@@ -77,7 +81,7 @@ def main(instruction):
         numOfGBs[t] = archive.fit_gb.shape[0]
         cr[t] = archive.calc_cover_rate(archive.fit_gb.shape[0])
 
-        if isDebugged:
+        if isDebugged:  # pragma: no cover
             logger.write4debug('p', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
             logger.write4debug('v', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
 
@@ -110,7 +114,7 @@ def xlsx_is_open(filepath: str) -> bool:
     else:
         return False
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     if not xlsx_is_open(sheet_name):
         instruction_set = ["691"]
         #instruction_set = ["27", "37", "47", "572", "573", "574", "575"]
