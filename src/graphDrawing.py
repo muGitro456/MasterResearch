@@ -10,7 +10,7 @@ colors = ["green", "blue", "orange", "cyan", "magenta", "purple", "red"]#, "blac
 markers = [",", "^", "o", "v", "D", "*", ","]
 #markers = ["o", "v", "D", "*"]
 
-def redraw(dataFileName):
+def redraw(dataFileName: list[str]) -> None:
     """
     グラフを再描画する。
 
