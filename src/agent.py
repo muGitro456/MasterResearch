@@ -110,7 +110,7 @@ class Predators(Swarm):
 class PredatorsSenior(Predators):
     C4 = param_dict["SELF_AWARENESS_OF_PREDATOR"]
 
-    def __init__(self, N, field) -> None:
+    def __init__(self, N: int, field: SearchSpace) -> None:
         super().__init__(N, field)
     
     def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:

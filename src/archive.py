@@ -107,7 +107,7 @@ class Archive:
         #print(cd) 
         return cd
     
-    def calc_cover_rate(self, divNum) -> float:
+    def calc_cover_rate(self, divNum: int) -> float:
         if self.K == 3:
             min_f = np.array([np.min(self.fit_gb[:, 0]), np.min(self.fit_gb[:, 1]), np.min(self.fit_gb[:, 2])])
             max_f = np.array([np.max(self.fit_gb[:, 0]), np.max(self.fit_gb[:, 1]), np.max(self.fit_gb[:, 2])])
