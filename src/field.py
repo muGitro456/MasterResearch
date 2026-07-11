@@ -1,8 +1,9 @@
+from typing import Any, Callable
 import numpy as np
 import copy
 
 class SearchSpace:
-    def __init__(self, params, problem) -> None:
+    def __init__(self, params: dict[str, Any], problem: "Problem") -> None:
         self.fun = problem.fun
         self.D = problem.D
         self.upper = problem.upper
@@ -15,23 +16,23 @@ class SearchSpace:
         self.VMAX = lambda g: VMAX_INI * np.exp(((g-1) / self.GEN_MAX) * np.log(VMAX_END / VMAX_INI))
         self.DAMP = params["DAMP"]
 
-    def update_fit(self, x):
+    def update_fit(self, x: np.ndarray) -> np.ndarray:
         return self.fun(x).T
     
-    def check_boundaries(self, POS, VEL):
+    def check_boundaries(self, POS: np.ndarray, VEL: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         for pos, vel in zip(POS, VEL):
             while any(pos < self.lower) or any(pos > self.upper):
                 pos[pos > self.upper] = self.DAMP * (2 * self.upper[pos > self.upper] - pos[pos > self.upper])
                 pos[pos < self.lower] = self.DAMP * (2 * self.lower[pos < self.lower] - pos[pos < self.lower])
-                
+
                 vel[pos > self.upper] = self.DAMP * (-1) * vel[pos > self.upper]
                 vel[pos < self.lower] = self.DAMP * (-1) * vel[pos < self.lower]
-        
+
         pos_new = copy.deepcopy(POS)
         vel_new = copy.deepcopy(VEL)
         return pos_new, vel_new
     
-    def speedmeter(self, VEL, gen):
+    def speedmeter(self, VEL: np.ndarray, gen: int) -> np.ndarray:
         vmax = self.VMAX(gen)
         #print("In speedmeter VEL.shape = ",VEL.shape)
         for vel in VEL:
@@ -41,7 +42,7 @@ class SearchSpace:
         return VEL_NEW
 
 class Problem:
-    def __init__(self, func_dict) -> None:
+    def __init__(self, func_dict: dict[str, Any]) -> None:
         name = func_dict["name"]
         dimension = func_dict["dimension"]
         upper = np.array([func_dict["upper"] for _ in range(dimension)])
@@ -97,7 +98,7 @@ class Problem:
                 self.lower = np.append(np.zeros(1), lower)
                 self.K = 2
     
-    def multimodel_func(self, func_name, dimension):
+    def multimodel_func(self, func_name: str, dimension: int) -> Callable[..., np.ndarray] | int:
         match func_name:
             case "Rastrigin":
                 A = lambda x : np.sum(x[:, 1:] ** 2, axis=1)

@@ -14,7 +14,7 @@ import record_writer
 # VScodeでは文字選択→Ctrl+Shift+Pでコマンドパレット→upperと入力で大文字にできる"
 sheet_name = "../プログラム実行記録管理シート.xlsx"  # Excelシートの名前
 
-def main(instruction):
+def main(instruction: str) -> None:
     TRIAL = 100         # 試行回数
     isDebugged = False  # 粒子の動きを確認したいか
     isPlotted = True    # パレートフロントの情報を記録したいか
@@ -97,7 +97,7 @@ def main(instruction):
 
 # PythonからLINEへ通知を送る関数
 # 参考にしたサイト: https://hiyokonoko.com/%E3%80%90%E5%88%9D%E5%BF%83%E8%80%85%E5%90%91%E3%81%91%E3%80%9110%E5%88%86%E3%81%A7%E3%81%A7%E3%81%8D%E3%82%8B%EF%BC%81python%E3%81%AE%E5%AE%9F%E8%A1%8C%E7%B5%90%E6%9E%9C%E3%82%92%E3%82%B9%E3%83%9E/862/
-def line_notify(message):
+def line_notify(message: str) -> None:
     line_notify_token = os.environ.get("LINE_NOTIFY_TOKEN") # アクセストークン
     line_notify_api = 'https://notify-api.line.me/api/notify'
     payload = {'message': message} # 引数として自由に入力することができます

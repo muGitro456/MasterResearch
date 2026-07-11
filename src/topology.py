@@ -6,7 +6,7 @@ class Topology:
         self.N_SIZE = N_SIZE
         self.relation = self.select_edge(name)
 
-    def select_edge(self, name):
+    def select_edge(self, name: str) -> list[list[int]] | int:
         N_sqrt = np.sqrt(self.N)
         relation = [None] * self.N  # 初期化
 

@@ -1,14 +1,16 @@
+from typing import Any
 from tqdm import tqdm
 import numpy as np
 from agent import PredatorsSenior, Neighborhood
 from agent_subs import SubSwarm, Neighborhood_C
 from topology import Topology
+from field import Problem
 from related import MOPSO
 from archive import Archive
 import logger as db
 
 class MASTER_A(MOPSO):
-    def __init__(self, params, problem, topology_dict):
+    def __init__(self, params: dict[str, Any], problem: Problem, topology_dict: dict[str, Any]) -> None:
         super().__init__(params, problem)
         
         self.N_SIZE = topology_dict["N_SIZE"]
@@ -34,14 +36,14 @@ class MASTER_A(MOPSO):
         # 全体アーカイブの初期化
         self.arc_MASTER = Archive(self.sw_MOPSO.POS, self.sw_MOPSO.FIT, self.NA_MAX, self.field.D, self.field.K)
 
-    def init_neighbors(self):
+    def init_neighbors(self) -> None:
         self.neighbors = [None] * self.N
         self.sub_arc_MOPSO = [None] * self.N
         for i in range(self.N):
             self.neighbors[i] = Neighborhood(self.sw_MOPSO, i, self.field, self.my_topology)
             self.sub_arc_MOPSO[i] = Archive(self.neighbors[i].POS, self.neighbors[i].FIT, self.NA_MAX, self.field.D, self.field.K)
     
-    def simulation(self):
+    def simulation(self) -> Archive:
         for g in tqdm(range(self.GEN_MAX), desc="Generation", leave=False):
             # MOPSOの処理
             leader = self.arc_MOPSO.select_leader()
@@ -72,7 +74,7 @@ class MASTER_A(MOPSO):
 
         return self.arc_MASTER
 
-    def union_neighbors(self, sub_arcs, index, topology):
+    def union_neighbors(self, sub_arcs: list[Archive], index: int, topology: Topology) -> tuple[np.ndarray, np.ndarray]:
         POS_TEMP = sub_arcs[index].pos_gb
         FIT_TEMP = sub_arcs[index].fit_gb
 
@@ -84,14 +86,14 @@ class MASTER_A(MOPSO):
         return POS_TEMP, FIT_TEMP
 
 class MASTER_B(MASTER_A):
-    def __init__(self, params, problem, topology_dict):
+    def __init__(self, params: dict[str, Any], problem: Problem, topology_dict: dict[str, Any]) -> None:
         super().__init__(params, problem, topology_dict)
-    
-    def simulation(self):
+
+    def simulation(self) -> Archive:
         return super().simulation()
 
 class MASTER_C(MOPSO):
-    def __init__(self, params, problem, topology_dict):
+    def __init__(self, params: dict[str, Any], problem: Problem, topology_dict: dict[str, Any]) -> None:
         super().__init__(params, problem)
         self.N_SUB_SWARM = params["N_SUB_SWARM"]  # サブ群の個数
         self.N_SUB_PARTICLE = self.N // self.N_SUB_SWARM  # サブ群を構成する粒子の数
@@ -115,13 +117,13 @@ class MASTER_C(MOPSO):
         # 全体アーカイブの初期化
         self.arc_MASTER_C = Archive(self.sw_MOPSO.POS, self.sw_MOPSO.FIT, self.NA_MAX, self.field.D, self.field.K)
 
-    def init_sub_swarm(self):
+    def init_sub_swarm(self) -> None:
         self.sub_sw_MOPSO = [None] * self.N_SUB_SWARM  # サブ群の初期化
 
         for i in range(self.N_SUB_SWARM):
                 self.sub_sw_MOPSO[i] = SubSwarm(self.N_SUB_PARTICLE, self.sw_MOPSO, i, self.field)
             
-    def simulation(self):
+    def simulation(self) -> Archive:
         for g in tqdm(range(self.GEN_MAX), desc="Generation", leave=False):
             # MOPSOの処理
             leader = self.arc_MOPSO.select_leader()

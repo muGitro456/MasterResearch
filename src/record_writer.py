@@ -1,3 +1,4 @@
+import datetime
 import numpy as np
 import pandas as pd
 import os
@@ -7,7 +8,7 @@ from openpyxl.styles.alignment import Alignment
 import logger
 
 
-def write4plot(trial: int, nums: tuple, f_name: str, m_name: str, s_time) -> str:
+def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_time: datetime.datetime) -> str:
     dir_path = (
         '../backLog/'
         + nums[0] + '_' + m_name + '/'
@@ -24,8 +25,8 @@ def write4plot(trial: int, nums: tuple, f_name: str, m_name: str, s_time) -> str
     return dir_path
 
 
-def write_record(sheet_name: str, trial: int, start_time, names: tuple, comment: str,
-                 processing_time: float, n_sub: int, *indicators) -> None:
+def write_record(sheet_name: str, trial: int, start_time: datetime.datetime, names: tuple[str, str, str],
+                 comment: str, processing_time: float, n_sub: int, *indicators: np.ndarray) -> None:
     my_wb = openpyxl.load_workbook(sheet_name)
     my_sheet = my_wb['No.7']
     right_alignment = Alignment(horizontal='right', vertical='center')

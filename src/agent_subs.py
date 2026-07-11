@@ -1,6 +1,13 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import numpy as np
 import copy, json
 import logger as db
+
+if TYPE_CHECKING:
+    from agent import Swarm
+    from field import SearchSpace
+    from topology import Topology
 
 with open('./property/parameters.json', 'r') as f:
     param_dict = json.load(f)
@@ -11,7 +18,7 @@ class SubSwarm:
     C1 = param_dict["SELF_AWARENESS"]
     C2 = param_dict["SOCIAL_AWARENESS"]
 
-    def __init__(self, N_SUB_PARTICLE, swarm, index, field) -> None:
+    def __init__(self, N_SUB_PARTICLE: int, swarm: Swarm, index: int, field: SearchSpace) -> None:
         self.N_SUB_PARTICLE = N_SUB_PARTICLE
         self.POS = np.empty((N_SUB_PARTICLE, field.D))
         self.VEL = np.empty((N_SUB_PARTICLE, field.D))
@@ -26,18 +33,18 @@ class SubSwarm:
             self.POS_PB[j] = swarm.POS_PB[index * N_SUB_PARTICLE + j]
             self.FIT_PB[j] = swarm.FIT_PB[index * N_SUB_PARTICLE + j]
     
-    def update_vel(self, gbL, my_field, gen):
+    def update_vel(self, gbL: np.ndarray, my_field: SearchSpace, gen: int) -> None:
         VEL_TMP = SubSwarm.W * self.VEL \
                 + SubSwarm.C1 * np.random.rand(self.N_SUB_PARTICLE, my_field.D) * (self.POS_PB - self.POS) \
                 + SubSwarm.C2 * np.random.rand(self.N_SUB_PARTICLE, my_field.D) * (gbL - self.POS)
 
         self.VEL = my_field.speedmeter(VEL_TMP, gen)
 
-    def update_pos(self, field):
+    def update_pos(self, field: SearchSpace) -> None:
         _POS_TMP = self.POS + self.VEL
         self.POS, self.VEL = field.check_boundaries(_POS_TMP, self.VEL)
     
-    def update_pb(self):
+    def update_pb(self) -> None:
         for i in range(self.N_SUB_PARTICLE):
             if all(self.FIT[i] < self.FIT_PB[i]):
                 self.POS_PB[i] = copy.deepcopy(self.POS[i])
@@ -48,7 +55,7 @@ class SubSwarm:
 class Neighborhood_C:
     C5 = param_dict["LOCAL_AWARENESS"]
 
-    def __init__(self, sub_swarms, index, field, my_topology) -> None:
+    def __init__(self, sub_swarms: list[SubSwarm], index: int, field: SearchSpace, my_topology: Topology) -> None:
         self.N_SIZE = len(my_topology.relation[index])
         self.N_SUB_PARTICLE = sub_swarms[0].N_SUB_PARTICLE
         self.my_field = field
@@ -73,7 +80,7 @@ class Neighborhood_C:
                 self.POS_PB[m * self.N_SUB_PARTICLE + j] = self.my_swarm[idx_edge].POS_PB[j]
                 self.FIT_PB[m * self.N_SUB_PARTICLE + j] = self.my_swarm[idx_edge].FIT_PB[j]
 
-    def explore(self, generation, leader, LBEST):
+    def explore(self, generation: int, leader: np.ndarray, LBEST: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         self.update_vel(leader, LBEST, self.my_field, generation)
 
         self.my_swarm[self.index].update_pos(self.my_field)
@@ -87,7 +94,7 @@ class Neighborhood_C:
 
         return self.POS, self.FIT
     
-    def update_vel(self, gbL, lb, my_field, gen):
+    def update_vel(self, gbL: np.ndarray, lb: np.ndarray, my_field: SearchSpace, gen: int) -> None:
         VEL_TMP = self.my_swarm[0].W * self.VEL \
                 + self.my_swarm[0].C1 * np.random.rand(self.N_SIZE * self.N_SUB_PARTICLE, my_field.D) * (self.POS_PB - self.POS) \
                 + self.my_swarm[0].C2 * np.random.rand(self.N_SIZE * self.N_SUB_PARTICLE, my_field.D) * (gbL - self.POS) \

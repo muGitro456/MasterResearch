@@ -1,6 +1,12 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import numpy as np
 import copy, json
 import logger as db
+
+if TYPE_CHECKING:
+    from field import SearchSpace
+    from topology import Topology
 
 with open('./property/parameters.json', 'r') as f:
     param_dict = json.load(f)
@@ -11,7 +17,7 @@ class Swarm:
     C1 = param_dict["SELF_AWARENESS"]
     C2 = param_dict["SOCIAL_AWARENESS"]
 
-    def __init__(self, N, field) -> None:
+    def __init__(self, N: int, field: SearchSpace) -> None:
         self.N = N
         self.my_field = field
         
@@ -21,7 +27,7 @@ class Swarm:
         self.POS_PB = copy.deepcopy(self.POS)
         self.FIT_PB = copy.deepcopy(self.FIT)
     
-    def explore(self, generation, leader):
+    def explore(self, generation: int, leader: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         self.update_vel(leader, self.my_field, generation)
 
         self.update_pos(self.my_field)
@@ -35,18 +41,18 @@ class Swarm:
 
         return self.POS, self.FIT
     
-    def update_vel(self, gbL, my_field, gen):
+    def update_vel(self, gbL: np.ndarray, my_field: SearchSpace, gen: int) -> None:
         VEL_TMP = Swarm.W * self.VEL \
                 + Swarm.C1 * np.random.rand(self.N, my_field.D) * (self.POS_PB - self.POS) \
                 + Swarm.C2 * np.random.rand(self.N, my_field.D) * (gbL - self.POS)
         #print("In update_vel _VEL_TMP.shape = ",_VEL_TMP.shape)
         self.VEL = my_field.speedmeter(VEL_TMP, gen)
 
-    def update_pos(self, field):
+    def update_pos(self, field: SearchSpace) -> None:
         _POS_TMP = self.POS + self.VEL
         self.POS, self.VEL = field.check_boundaries(_POS_TMP, self.VEL)
     
-    def update_pb(self):
+    def update_pb(self) -> None:
         for i in range(self.N):
             if all(self.FIT[i] < self.FIT_PB[i]):
                 self.POS_PB[i] = copy.deepcopy(self.POS[i])
@@ -59,11 +65,11 @@ class Predators(Swarm):
     W_INI = param_dict["INERTIA_INITIAL"]
     W_END = param_dict["INERTIA_END"]
 
-    def __init__(self, N, field) -> None:
+    def __init__(self, N: int, field: SearchSpace) -> None:
         super().__init__(N, field)
         self.RIVALS = np.zeros((self.N, field.D))
     
-    def explore(self, generation):
+    def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:
         self.update_rivals()
         self.update_vel(self.my_field, generation)
 
@@ -75,13 +81,13 @@ class Predators(Swarm):
 
         return self.POS, self.FIT
 
-    def update_vel(self, my_field, gen):
+    def update_vel(self, my_field: SearchSpace, gen: int) -> None:
         W_FPO = Predators.W_INI + (Predators.W_END - Predators.W_INI) * (gen / my_field.GEN_MAX)
 
         VEL_TMP = W_FPO * Predators.C3 * np.random.rand(self.N, my_field.D) * (self.RIVALS - self.POS)
         self.VEL = my_field.speedmeter(VEL_TMP, gen)
     
-    def update_rivals(self):
+    def update_rivals(self) -> None:
         FIT_PRED = self.calc_fit_predator()
         SUM_FIT_PRED = np.sum(FIT_PRED)
         for i in range(self.N):
@@ -91,7 +97,7 @@ class Predators(Swarm):
                 rival = np.random.choice(rivals, 1)
             self.RIVALS[i] = self.POS[rival]
 
-    def calc_fit_predator(self):
+    def calc_fit_predator(self) -> np.ndarray:
         K = self.FIT.shape[1]
         FIT_PRED = np.zeros(self.N)
         for i in range(self.N):
@@ -104,10 +110,10 @@ class Predators(Swarm):
 class PredatorsSenior(Predators):
     C4 = param_dict["SELF_AWARENESS_OF_PREDATOR"]
 
-    def __init__(self, N, field) -> None:
+    def __init__(self, N: int, field: SearchSpace) -> None:
         super().__init__(N, field)
     
-    def explore(self, generation):
+    def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:
         self.update_rivals()
         self.update_vel(self.my_field, generation)
 
@@ -122,7 +128,7 @@ class PredatorsSenior(Predators):
 
         return self.POS, self.FIT
 
-    def update_rivals(self):
+    def update_rivals(self) -> None:
         FIT_PRED = self.calc_fit_predator()
         SUM_FIT_PRED = np.sum(FIT_PRED)
         for i in range(self.N):
@@ -131,8 +137,8 @@ class PredatorsSenior(Predators):
                 rivals = np.array([k for k in range(self.N) if k != i])
                 rival = np.random.choice(rivals, 1)
             self.RIVALS[i] = self.POS[rival]
-    
-    def update_vel(self, my_field, gen):
+
+    def update_vel(self, my_field: SearchSpace, gen: int) -> None:
         W_FPO = Predators.W_INI + \
                 (Predators.W_END - Predators.W_INI) * (gen / my_field.GEN_MAX)
         
@@ -143,7 +149,7 @@ class PredatorsSenior(Predators):
 class Neighborhood:
     C5 = param_dict["LOCAL_AWARENESS"]
 
-    def __init__(self, swarm, index, field, my_topology) -> None:
+    def __init__(self, swarm: Swarm, index: int, field: SearchSpace, my_topology: Topology) -> None:
         self.N_SIZE = len(my_topology.relation[index])
         self.my_field = field
         self.my_swarm = swarm
@@ -162,7 +168,7 @@ class Neighborhood:
             self.POS_PB[m] = swarm.POS_PB[idx_edge]
             self.FIT_PB[m] = swarm.FIT_PB[idx_edge]
     
-    def explore(self, generation, leader, LBEST):
+    def explore(self, generation: int, leader: np.ndarray, LBEST: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         self.update_vel(leader, LBEST, self.my_field, generation)
 
         self.my_swarm.update_pos(self.my_field)
@@ -176,7 +182,7 @@ class Neighborhood:
 
         return self.POS, self.FIT
     
-    def update_vel(self, gbL, lb, my_field, gen):
+    def update_vel(self, gbL: np.ndarray, lb: np.ndarray, my_field: SearchSpace, gen: int) -> None:
         VEL_TMP = self.my_swarm.W * self.VEL \
                 + self.my_swarm.C1 * np.random.rand(self.N_SIZE, my_field.D) * (self.POS_PB - self.POS) \
                 + self.my_swarm.C2 * np.random.rand(self.N_SIZE, my_field.D) * (gbL - self.POS) \

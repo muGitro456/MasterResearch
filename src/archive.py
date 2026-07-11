@@ -1,7 +1,7 @@
 import numpy as np
 
 class Archive:
-    def __init__(self, pos_swarm, fit_swarm, NA_MAX, D, K) -> None:
+    def __init__(self, pos_swarm: np.ndarray, fit_swarm: np.ndarray, NA_MAX: int, D: int, K: int) -> None:
         self.cr = 0.0 # 被覆率
         self.NA_MAX = NA_MAX
         self.D = D
@@ -9,7 +9,7 @@ class Archive:
 
         self.pos_gb, self.fit_gb = self.make_pareto_front(pos_swarm, fit_swarm)
     
-    def make_pareto_front(self, pos, fit):
+    def make_pareto_front(self, pos: np.ndarray, fit: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         pos_gb = np.zeros((self.NA_MAX, self.D)) # アーカイブに保存されているGBestの位置
         fit_gb = np.zeros((self.NA_MAX, self.K)) # アーカイブに保存されているGBestの評価値
 
@@ -58,12 +58,12 @@ class Archive:
 
         return pos_gb[:NA, :], fit_gb[:NA, :]
 
-    def update_archive(self, POS_current, FIT_current):
+    def update_archive(self, POS_current: np.ndarray, FIT_current: np.ndarray) -> None:
         tmp_pos_gb = np.vstack((self.pos_gb, POS_current))
         tmp_fit_gb = np.vstack((self.fit_gb, FIT_current))
         self.make_pareto_front(tmp_pos_gb, tmp_fit_gb)
     
-    def select_leader(self):
+    def select_leader(self) -> np.ndarray:
         cd = self.calc_crowding_distance()
 
         if len(cd) == 1:
@@ -81,7 +81,7 @@ class Archive:
             #print(type(leader))
             return self.pos_gb[leader[0,0]]
     
-    def calc_crowding_distance(self, fit_gb=None):
+    def calc_crowding_distance(self, fit_gb: np.ndarray | None = None) -> np.ndarray:
         if fit_gb is None:
             fit_gb = self.fit_gb
         NA = len(fit_gb)
@@ -107,7 +107,7 @@ class Archive:
         #print(cd) 
         return cd
     
-    def calc_cover_rate(self, divNum) -> float:
+    def calc_cover_rate(self, divNum: int) -> float:
         if self.K == 3:
             min_f = np.array([np.min(self.fit_gb[:, 0]), np.min(self.fit_gb[:, 1]), np.min(self.fit_gb[:, 2])])
             max_f = np.array([np.max(self.fit_gb[:, 0]), np.max(self.fit_gb[:, 1]), np.max(self.fit_gb[:, 2])])
@@ -135,7 +135,7 @@ class Archive:
             cover[k] = cover[k] / divNum
         return np.sum(cover) / self.K
 
-    def union_archive(self, POS1, FIT1, POS2, FIT2):
+    def union_archive(self, POS1: np.ndarray, FIT1: np.ndarray, POS2: np.ndarray, FIT2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         POS_COMB = np.vstack((POS1, POS2))
         FIT_COMB = np.vstack((FIT1, FIT2))
         return POS_COMB, FIT_COMB

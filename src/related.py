@@ -1,13 +1,14 @@
 # Pythonでは、一つのファイルには一クラス!という哲学はない.
+from typing import Any
 from tqdm import tqdm
 
 from agent import Swarm, Predators, PredatorsSenior
-from field import SearchSpace
+from field import SearchSpace, Problem
 from archive import Archive
 import logger as db
 
 class MOPSO:
-    def __init__(self, params, problem):
+    def __init__(self, params: dict[str, Any], problem: Problem) -> None:
         self.N = params["N"]
         self.NA_MAX = params["N_ARCHIVE_MAX"]
         self.GEN_MAX = params["GENERATION_MAX"]
@@ -16,7 +17,7 @@ class MOPSO:
         self.sw_MOPSO = Swarm(self.N, self.field)
         self.arc_MOPSO = Archive(self.sw_MOPSO.POS, self.sw_MOPSO.FIT, self.NA_MAX, self.field.D, self.field.K)
 
-    def simulation(self):
+    def simulation(self) -> Archive:
         for g in tqdm(range(self.GEN_MAX), desc="Generation", leave=False):
             leader = self.arc_MOPSO.select_leader()
             POS, FIT = self.sw_MOPSO.explore(g+1, leader)
@@ -27,14 +28,14 @@ class MOPSO:
         return self.arc_MOPSO
 
 class FPOMOPSO(MOPSO):
-    def __init__(self, params, problem):
+    def __init__(self, params: dict[str, Any], problem: Problem) -> None:
         super().__init__(params, problem)
 
         self.sw_FPO = Predators(self.N, self.field)
         self.arc_FPO = Archive(self.sw_FPO.POS, self.sw_FPO.FIT, self.NA_MAX, self.field.D, self.field.K)
         self.arc_FPOMOPSO = Archive(self.sw_MOPSO.POS, self.sw_MOPSO.FIT, self.NA_MAX, self.field.D, self.field.K)
 
-    def simulation(self):
+    def simulation(self) -> Archive:
         for g in tqdm(range(self.GEN_MAX), desc="Generation", leave=False):
             # MOPSOの処理
             leader = self.arc_MOPSO.select_leader()
@@ -55,7 +56,7 @@ class FPOMOPSO(MOPSO):
         return self.arc_FPOMOPSO
 
 class SENIOR(FPOMOPSO):
-    def __init__(self, params, problem):
+    def __init__(self, params: dict[str, Any], problem: Problem) -> None:
         super().__init__(params, problem)
 
         # 上書き処理
@@ -63,5 +64,5 @@ class SENIOR(FPOMOPSO):
         self.arc_FPO = Archive(self.sw_FPO.POS, self.sw_FPO.FIT, self.NA_MAX, self.field.D, self.field.K)
         self.arc_FPOMOPSO = Archive(self.sw_MOPSO.POS, self.sw_MOPSO.FIT, self.NA_MAX, self.field.D, self.field.K)
 
-    def simulation(self):
+    def simulation(self) -> Archive:
         return super().simulation()
