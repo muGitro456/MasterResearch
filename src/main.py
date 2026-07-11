@@ -64,11 +64,15 @@ def main(instruction):
 
     processing_time = np.zeros(TRIAL)
     log_dir = ""
+    _algorithm_map: dict[str, type] = {
+        "MOPSO": MOPSO, "FPOMOPSO": FPOMOPSO, "SENIOR": SENIOR,
+        "MASTER_A": MASTER_A, "MASTER_B": MASTER_B, "MASTER_C": MASTER_C,
+    }
     for t in tqdm(range(TRIAL), desc="Trial     "):
         if int(METH_NUM) <= 3:
-            algorithm = eval(METH_NAME)(param_dict, problem)
+            algorithm = _algorithm_map[METH_NAME](param_dict, problem)
         else:
-            algorithm = eval(METH_NAME)(param_dict, problem, topo_dict[TOPO_NUM])
+            algorithm = _algorithm_map[METH_NAME](param_dict, problem, topo_dict[TOPO_NUM])
 
         start = time.time()
         archive = algorithm.simulation()
