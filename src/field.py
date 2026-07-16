@@ -128,6 +128,6 @@ class Problem:
                 F = lambda x : np.sum(np.abs(x[:, 1:] * np.sin(x[:, 1:]) + 0.1 * x[:, 1:]))
         
             case _: # defaultの場合
-                print("ERROR")
+                print(f"ERROR: 名前が異なります. ({func_name})")
                 return -1
         return F

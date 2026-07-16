@@ -1,0 +1,15 @@
+target-version = "py310"
+line-length = 120
+
+[lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E501",  # 行長制限 — line-length で別途管理
+    "E741",  # 曖昧な変数名 — 研究コードは l, O, I 等の数学的変数名を使用
+]
+
+[lint.per-file-ignores]
+"tests/**/*.py" = ["F401"]  # テストファイルは未使用インポートを許容
+
+[lint.isort]
+known-first-party = ["src"]
