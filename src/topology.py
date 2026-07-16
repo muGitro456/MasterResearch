@@ -6,9 +6,9 @@ class Topology:
         self.N_SIZE = N_SIZE
         self.relation = self.select_edge(name)
 
-    def select_edge(self, name: str) -> list[list[int]] | int:
+    def select_edge(self, name: str) -> list[list[int]]:
         N_sqrt = np.sqrt(self.N)
-        relation = [None] * self.N  # 初期化
+        relation: list[list[int]] = [[] for _ in range(self.N)]  # 初期化
 
         match name:
             case "Ring_5" | "Ring_3" | "Ring_7": # リングトポロジーの場合
@@ -88,6 +88,6 @@ class Topology:
                     
                     relation[i] = edge
             case _:
-                relation = -1
                 print("ERROR: 名前が異なります.")
+                return -1
         return relation

@@ -37,11 +37,13 @@ class MASTER_A(MOPSO):
         self.arc_MASTER = Archive(self.sw_MOPSO.POS, self.sw_MOPSO.FIT, self.NA_MAX, self.field.D, self.field.K)
 
     def init_neighbors(self) -> None:
-        self.neighbors = [None] * self.N
-        self.sub_arc_MOPSO = [None] * self.N
+        self.neighbors: list[Neighborhood] = []
+        self.sub_arc_MOPSO: list[Archive] = []
         for i in range(self.N):
-            self.neighbors[i] = Neighborhood(self.sw_MOPSO, i, self.field, self.my_topology)
-            self.sub_arc_MOPSO[i] = Archive(self.neighbors[i].POS, self.neighbors[i].FIT, self.NA_MAX, self.field.D, self.field.K)
+            neighbor = Neighborhood(self.sw_MOPSO, i, self.field, self.my_topology)
+            sub_arc = Archive(neighbor.POS, neighbor.FIT, self.NA_MAX, self.field.D, self.field.K)
+            self.neighbors.append(neighbor)
+            self.sub_arc_MOPSO.append(sub_arc)
     
     def simulation(self) -> Archive:
         for g in tqdm(range(self.GEN_MAX), desc="Generation", leave=False):
@@ -104,11 +106,13 @@ class MASTER_C(MOPSO):
         # サブ粒子群とサブアーカイブの初期化        
         self.init_sub_swarm()
 
-        self.neighbors_C = [None] * self.N_SUB_SWARM
-        self.sub_arc_MOPSO = [None] * self.N_SUB_SWARM
+        self.neighbors_C: list[Neighborhood_C] = []
+        self.sub_arc_MOPSO: list[Archive] = []
         for i in range(self.N_SUB_SWARM):
-            self.neighbors_C[i] = Neighborhood_C(self.sub_sw_MOPSO, i, self.field, self.my_topology)
-            self.sub_arc_MOPSO[i] = Archive(self.neighbors_C[i].POS, self.neighbors_C[i].FIT, self.NA_MAX, self.field.D, self.field.K)
+            neighbor_c = Neighborhood_C(self.sub_sw_MOPSO, i, self.field, self.my_topology)
+            sub_arc = Archive(neighbor_c.POS, neighbor_c.FIT, self.NA_MAX, self.field.D, self.field.K)
+            self.neighbors_C.append(neighbor_c)
+            self.sub_arc_MOPSO.append(sub_arc)
     
         # FPO粒子群とアーカイブの初期化
         self.sw_FPO = PredatorsSenior(self.N, self.field)
@@ -118,10 +122,9 @@ class MASTER_C(MOPSO):
         self.arc_MASTER_C = Archive(self.sw_MOPSO.POS, self.sw_MOPSO.FIT, self.NA_MAX, self.field.D, self.field.K)
 
     def init_sub_swarm(self) -> None:
-        self.sub_sw_MOPSO = [None] * self.N_SUB_SWARM  # サブ群の初期化
-
+        self.sub_sw_MOPSO: list[SubSwarm] = []
         for i in range(self.N_SUB_SWARM):
-                self.sub_sw_MOPSO[i] = SubSwarm(self.N_SUB_PARTICLE, self.sw_MOPSO, i, self.field)
+            self.sub_sw_MOPSO.append(SubSwarm(self.N_SUB_PARTICLE, self.sw_MOPSO, i, self.field))
             
     def simulation(self) -> Archive:
         for g in tqdm(range(self.GEN_MAX), desc="Generation", leave=False):

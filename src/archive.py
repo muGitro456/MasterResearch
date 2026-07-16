@@ -10,8 +10,8 @@ class Archive:
         self.pos_gb, self.fit_gb = self.make_pareto_front(pos_swarm, fit_swarm)
     
     def make_pareto_front(self, pos: np.ndarray, fit: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-        pos_gb = np.zeros((self.NA_MAX, self.D)) # アーカイブに保存されているGBestの位置
-        fit_gb = np.zeros((self.NA_MAX, self.K)) # アーカイブに保存されているGBestの評価値
+        pos_gb: np.ndarray = np.zeros((self.NA_MAX, self.D)) # アーカイブに保存されているGBestの位置
+        fit_gb: np.ndarray = np.zeros((self.NA_MAX, self.K)) # アーカイブに保存されているGBestの評価値
 
         if self.K == 2:
             indices_sorted = np.argsort(fit[:, 0])
@@ -68,18 +68,18 @@ class Archive:
 
         if len(cd) == 1:
             #print("アーカイブ内の解が1個")
-            return self.pos_gb[0]
+            return self.pos_gb[0]  # type: ignore[no-any-return]
         elif len(cd) == 2:
             #print("アーカイブ内の解が2個")
             selected = self.pos_gb[0] if np.random.rand() > 0.5 else self.pos_gb[1]
-            return selected
+            return selected  # type: ignore[no-any-return]
         else:
             weights = np.array( [cd[j] for j in range(len(cd)) if np.abs(cd[j]) != np.inf] )
             p_weights = np.array([weights[j] / np.sum(weights) for j in range(len(weights))])
             chosen = np.random.choice(weights, size=1, p=p_weights)
             leader = np.argwhere(cd == chosen)
             #print(type(leader))
-            return self.pos_gb[leader[0,0]]
+            return self.pos_gb[leader[0,0]]  # type: ignore[no-any-return]
     
     def calc_crowding_distance(self, fit_gb: np.ndarray | None = None) -> np.ndarray:
         if fit_gb is None:

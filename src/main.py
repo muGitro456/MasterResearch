@@ -38,9 +38,9 @@ def main(instruction: str) -> None:
         comment = "ただのテスト"
     
     if len(instruction) == 3:  # MASTER_BまたはMASTER_Cメソッドを使用するのであれば
-        METH_NUM, FUNC_NUM, TOPO_NUM = instruction  # メソッド番号、関数番号、トポロジー番号の３つに分離する
+        METH_NUM, FUNC_NUM, TOPO_NUM = instruction[0], instruction[1], instruction[2]  # メソッド番号、関数番号、トポロジー番号の３つに分離する
     else:
-        METH_NUM, FUNC_NUM = instruction  # メソッド番号と関数番号の２つに分離する
+        METH_NUM, FUNC_NUM = instruction[0], instruction[1]  # メソッド番号と関数番号の２つに分離する
         if METH_NUM == "4":  # MASTER_Aメソッドであれば
             TOPO_NUM = "1"  # リングトポロジー(近傍数5)
         else:
@@ -89,7 +89,7 @@ def main(instruction: str) -> None:
             log_dir = record_writer.write4plot(t + 1, (METH_NUM, FUNC_NUM), FUNC_NAME, METH_NAME, startTime)
 
     print("Finished!!")
-    processing_time_ave = np.average(processing_time)
+    processing_time_ave = float(np.average(processing_time))
     print("平均実行時間は{}[s]".format(processing_time_ave))
     if isPlotted:
         metrics.evaluation(log_dir, numOfGBs, cr)
@@ -98,7 +98,7 @@ def main(instruction: str) -> None:
 # PythonからLINEへ通知を送る関数
 # 参考にしたサイト: https://hiyokonoko.com/%E3%80%90%E5%88%9D%E5%BF%83%E8%80%85%E5%90%91%E3%81%91%E3%80%9110%E5%88%86%E3%81%A7%E3%81%A7%E3%81%8D%E3%82%8B%EF%BC%81python%E3%81%AE%E5%AE%9F%E8%A1%8C%E7%B5%90%E6%9E%9C%E3%82%92%E3%82%B9%E3%83%9E/862/
 def line_notify(message: str) -> None:
-    line_notify_token = os.environ.get("LINE_NOTIFY_TOKEN") # アクセストークン
+    line_notify_token = os.environ.get("LINE_NOTIFY_TOKEN", "") # アクセストークン
     line_notify_api = 'https://notify-api.line.me/api/notify'
     payload = {'message': message} # 引数として自由に入力することができます
     headers = {'Authorization': 'Bearer ' + line_notify_token}

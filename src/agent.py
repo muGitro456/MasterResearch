@@ -69,7 +69,7 @@ class Predators(Swarm):
         super().__init__(N, field)
         self.RIVALS = np.zeros((self.N, field.D))
     
-    def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:
+    def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:  # type: ignore[override]
         self.update_rivals()
         self.update_vel(self.my_field, generation)
 
@@ -81,25 +81,25 @@ class Predators(Swarm):
 
         return self.POS, self.FIT
 
-    def update_vel(self, my_field: SearchSpace, gen: int) -> None:
+    def update_vel(self, my_field: SearchSpace, gen: int) -> None:  # type: ignore[override]
         W_FPO = Predators.W_INI + (Predators.W_END - Predators.W_INI) * (gen / my_field.GEN_MAX)
 
         VEL_TMP = W_FPO * Predators.C3 * np.random.rand(self.N, my_field.D) * (self.RIVALS - self.POS)
         self.VEL = my_field.speedmeter(VEL_TMP, gen)
-    
+
     def update_rivals(self) -> None:
         FIT_PRED = self.calc_fit_predator()
         SUM_FIT_PRED = np.sum(FIT_PRED)
         for i in range(self.N):
-            rival = i
+            rival_idx: int = i
             if np.random.rand() < (FIT_PRED[i] / SUM_FIT_PRED) * np.random.rand():
                 rivals = np.array([k for k in range(self.N) if k != i])
-                rival = np.random.choice(rivals, 1)
-            self.RIVALS[i] = self.POS[rival]
+                rival_idx = int(np.random.choice(rivals, 1)[0])
+            self.RIVALS[i] = self.POS[rival_idx]
 
     def calc_fit_predator(self) -> np.ndarray:
         K = self.FIT.shape[1]
-        FIT_PRED = np.zeros(self.N)
+        FIT_PRED: np.ndarray = np.zeros(self.N)
         for i in range(self.N):
             for k in range(K):
                 FIT_PRED[i] += self.FIT[i, k] / (np.max(self.FIT[:, k]) - np.min(self.FIT[:, k]))
@@ -113,7 +113,7 @@ class PredatorsSenior(Predators):
     def __init__(self, N: int, field: SearchSpace) -> None:
         super().__init__(N, field)
     
-    def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:
+    def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:  # type: ignore[override]
         self.update_rivals()
         self.update_vel(self.my_field, generation)
 
@@ -132,13 +132,13 @@ class PredatorsSenior(Predators):
         FIT_PRED = self.calc_fit_predator()
         SUM_FIT_PRED = np.sum(FIT_PRED)
         for i in range(self.N):
-            rival = i
+            rival_idx: int = i
             if np.random.rand() < (FIT_PRED[i] / SUM_FIT_PRED):
                 rivals = np.array([k for k in range(self.N) if k != i])
-                rival = np.random.choice(rivals, 1)
-            self.RIVALS[i] = self.POS[rival]
+                rival_idx = int(np.random.choice(rivals, 1)[0])
+            self.RIVALS[i] = self.POS[rival_idx]
 
-    def update_vel(self, my_field: SearchSpace, gen: int) -> None:
+    def update_vel(self, my_field: SearchSpace, gen: int) -> None:  # type: ignore[override]
         W_FPO = Predators.W_INI + \
                 (Predators.W_END - Predators.W_INI) * (gen / my_field.GEN_MAX)
         
