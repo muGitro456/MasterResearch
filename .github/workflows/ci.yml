@@ -32,4 +32,4 @@ jobs:
             pytest-mock
 
       - name: Run tests
-        run: pytest tests/ --cov=src --cov-report=term-missing
+        run: pytest tests/
