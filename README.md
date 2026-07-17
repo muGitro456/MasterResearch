@@ -9,22 +9,26 @@
 
 ```
 MasterResearch/
-└── src/
-    ├── main.py          # エントリポイント・実験制御
-    ├── field.py         # 探索空間・テスト問題の定義
-    ├── agent.py         # 粒子・粒子群クラス (Swarm, Predators, Neighborhood)
-    ├── agent_subs.py    # サブ粒子群クラス (MASTER_C用)
-    ├── archive.py       # パレートフロント管理 (Archive)
-    ├── topology.py      # 粒子間トポロジーの定義
-    ├── related.py       # 既存手法の実装 (MOPSO, FPO-MOPSO, SENIOR)
-    ├── proposed.py      # 提案手法の実装 (MASTER_A/B/C)
-    ├── database.py      # ログ記録・評価指標計算・Excel出力
-    ├── graphDrawing.py  # グラフ描画
-    └── property/
-        ├── parameters.json  # アルゴリズムパラメータ
-        ├── methods.json     # 手法番号とクラス名のマッピング
-        ├── functions.json   # ベンチマーク関数の設定
-        └── topologies.json  # トポロジーの設定
+├── src/                     # アルゴリズムコア
+│   ├── main.py              # エントリポイント・実験制御
+│   ├── field.py             # 探索空間・テスト問題の定義
+│   ├── agent.py             # 粒子・粒子群クラス (Swarm, Predators, Neighborhood)
+│   ├── agent_subs.py        # サブ粒子群クラス (MASTER_C用)
+│   ├── archive.py           # パレートフロント管理 (Archive)
+│   ├── topology.py          # 粒子間トポロジーの定義
+│   ├── related.py           # 既存手法の実装 (MOPSO, FPO-MOPSO, SENIOR)
+│   ├── proposed.py          # 提案手法の実装 (MASTER_A/B/C)
+│   ├── metrics.py           # 評価指標計算 (被覆率・RNI)
+│   ├── logger.py            # 粒子情報の記録
+│   ├── record_writer.py     # 結果の CSV/Excel 出力
+│   └── property/
+│       ├── parameters.json  # アルゴリズムパラメータ
+│       ├── methods.json     # 手法番号とクラス名のマッピング
+│       ├── functions.json   # ベンチマーク関数の設定
+│       └── topologies.json  # トポロジーの設定
+└── tools/                   # 単独実行スクリプト
+    ├── database.py          # メトリクス計算ツール (CLI)
+    └── graphDrawing.py      # グラフ描画ツール
 ```
 
 ---

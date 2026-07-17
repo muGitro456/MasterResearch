@@ -1,3 +1,7 @@
+"""実験結果（パレートフロント座標・評価指標統計）を CSV と Excel に書き出すモジュール。
+
+logger.py のグローバル変数（LOG_POS, LOG_VEL, LOG_FIT）を読み取って出力する。
+"""
 import datetime
 import numpy as np
 import pandas as pd

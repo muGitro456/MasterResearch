@@ -1,3 +1,7 @@
+"""粒子群の位置・速度・適合値をメモリに記録するモジュール。
+
+record_writer.py が CSV 出力時にここのグローバル変数を参照する。
+"""
 import numpy as np
 import pandas as pd
 import os
