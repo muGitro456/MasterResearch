@@ -1,4 +1,13 @@
+"""RNI・被覆率などのメトリクスをコマンドラインから計算するツール。
+
+Usage:
+    python tools/database.py -rni    # 2つのパレートフロントの RNI を比較
+    python tools/database.py -val    # ディレクトリ内全パレートフロントの被覆率を評価
+    python tools/database.py -rniall # 1つのパレートフロントと複数の RNI を比較
+"""
 import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 from metrics import evaluation, rni
 
 

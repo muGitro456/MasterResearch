@@ -3,8 +3,10 @@ import sys
 import pytest
 
 _SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
+_TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tools'))
 os.chdir(_SRC_DIR)
 sys.path.insert(0, _SRC_DIR)
+sys.path.insert(0, _TOOLS_DIR)
 
 
 @pytest.fixture
