@@ -1,6 +1,6 @@
-"""
-python .\graphDrawing.py
-と打ち込むと実行される
+"""グラフ描画ツール。パレートフロントの座標 CSV を読み込んで散布図を表示する。
+
+Usage: python tools/graphDrawing.py
 """
 import matplotlib.pyplot as plt
 import pandas as pd

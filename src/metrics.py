@@ -1,3 +1,7 @@
+"""パレートフロント評価指標（被覆率・RNI）の計算モジュール。
+
+database.py（tools/）および main.py から呼び出される。
+"""
 import numpy as np
 import pandas as pd
 import glob
