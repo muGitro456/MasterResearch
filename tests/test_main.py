@@ -1,7 +1,4 @@
 import sys
-from unittest.mock import MagicMock
-
-sys.modules.setdefault('requests', MagicMock())
 
 import numpy as np
 import main
@@ -17,15 +14,6 @@ class TestFileIsLocked:
         mocker.patch('builtins.open', side_effect=OSError("locked"))
         assert main.file_is_locked('dummy.csv') is True
 
-
-class TestLineNotify:
-    def test_normal_posts_to_line_api(self, mocker):
-        mock_post = mocker.patch('main.requests.post')
-        mocker.patch.dict('os.environ', {'LINE_NOTIFY_TOKEN': 'dummy_token'})
-        main.line_notify("test message")
-        mock_post.assert_called_once()
-        call_args = mock_post.call_args
-        assert call_args[0][0] == 'https://notify-api.line.me/api/notify'
 
 
 class TestMain:
