@@ -12,7 +12,7 @@ import metrics
 import record_writer
 
 # VScodeでは文字選択→Ctrl+Shift+Pでコマンドパレット→upperと入力で大文字にできる"
-sheet_name = "../プログラム実行記録管理シート.xlsx"  # Excelシートの名前
+sheet_name = "../プログラム実行記録管理シート.csv"
 
 def main(instruction: str) -> None:
     TRIAL = 100         # 試行回数
@@ -104,18 +104,17 @@ def line_notify(message: str) -> None:
     headers = {'Authorization': 'Bearer ' + line_notify_token}
     requests.post(line_notify_api, data=payload, headers=headers)
 
-# ファイルを追記モードで開けるかチェックする関数
-def xlsx_is_open(filepath: str) -> bool:
+def file_is_locked(filepath: str) -> bool:
     try:
         f = open(filepath, 'a')
         f.close()
-    except:
+    except OSError:
         return True
     else:
         return False
 
 if __name__ == "__main__":  # pragma: no cover
-    if not xlsx_is_open(sheet_name):
+    if not file_is_locked(sheet_name):
         instruction_set = ["691"]
         #instruction_set = ["27", "37", "47", "572", "573", "574", "575"]
         #instruction_set = ["515", "525", "535", "545", "555", "565"]
@@ -126,4 +125,4 @@ if __name__ == "__main__":  # pragma: no cover
         text = "\nプログラムの実行を完了しました\n結果を確認してください"
         line_notify(text)
     else:
-        print("ERROR: {}を閉じてから実行してください".format(sheet_name))
+        print("ERROR: {} がロックされています。閉じてから実行してください".format(sheet_name))

@@ -7,15 +7,15 @@ import numpy as np
 import main
 
 
-class TestXlsxIsOpen:
-    def test_normal_file_not_open(self, tmp_path):
-        f = tmp_path / "test.xlsx"
+class TestFileIsLocked:
+    def test_normal_file_not_locked(self, tmp_path):
+        f = tmp_path / "test.csv"
         f.write_bytes(b"")
-        assert main.xlsx_is_open(str(f)) is False
+        assert main.file_is_locked(str(f)) is False
 
-    def test_normal_file_is_open(self, mocker):
-        mocker.patch('builtins.open', side_effect=IOError("locked"))
-        assert main.xlsx_is_open('dummy.xlsx') is True
+    def test_normal_file_is_locked(self, mocker):
+        mocker.patch('builtins.open', side_effect=OSError("locked"))
+        assert main.file_is_locked('dummy.csv') is True
 
 
 class TestLineNotify:

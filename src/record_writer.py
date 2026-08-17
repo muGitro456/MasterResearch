@@ -1,4 +1,4 @@
-"""実験結果（パレートフロント座標・評価指標統計）を CSV と Excel に書き出すモジュール。
+"""実験結果（パレートフロント座標・評価指標統計）を CSV に書き出すモジュール。
 
 logger.py のグローバル変数（LOG_POS, LOG_VEL, LOG_FIT）を読み取って出力する。
 """
@@ -6,8 +6,6 @@ import datetime
 import numpy as np
 import pandas as pd
 import os
-import openpyxl
-from openpyxl.styles.alignment import Alignment
 
 import logger
 
@@ -29,39 +27,30 @@ def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_ti
     return dir_path
 
 
-def write_record(sheet_name: str, trial: int, start_time: datetime.datetime, names: tuple[str, str, str],
+def write_record(csv_path: str, trial: int, start_time: datetime.datetime, names: tuple[str, str, str],
                  comment: str, processing_time: float, n_sub: int, *indicators: np.ndarray) -> None:
-    my_wb = openpyxl.load_workbook(sheet_name)
-    my_sheet = my_wb['No.7']
-    right_alignment = Alignment(horizontal='right', vertical='center')
-
-    r = 1
-    while True:
-        if my_sheet.cell(row=r, column=1).value is None:
-            break
-        else:
-            r += 1
-
-    my_sheet.cell(r, 1).value = start_time.year
-    my_sheet.cell(r, 2).value = start_time.month
-    my_sheet.cell(r, 3).value = start_time.day
-    my_sheet.cell(r, 4).value = start_time.strftime('%H:%M:%S')
-    my_sheet.cell(r, 5).value = names[0]
-    my_sheet.cell(r, 6).value = names[1]
-    my_sheet.cell(r, 7).value = names[2]
-    my_sheet.cell(r, 8).value = trial
-    my_sheet.cell(r, 9).value = comment
-    my_sheet.cell(r, 10).value = processing_time
-    my_sheet.cell(r, 11).value = n_sub
-
+    row: dict[str, object] = {
+        'year': start_time.year,
+        'month': start_time.month,
+        'day': start_time.day,
+        'time': start_time.strftime('%H:%M:%S'),
+        'func_name': names[0],
+        'meth_name': names[1],
+        'topo_name': names[2],
+        'trial': trial,
+        'comment': comment,
+        'processing_time': processing_time,
+        'n_sub': n_sub,
+    }
     for i, indicator in enumerate(indicators):
-        my_sheet.cell(r, 12 + 6*i).value = np.average(indicator)
-        my_sheet.cell(r, 13 + 6*i).value = np.max(indicator)
-        my_sheet.cell(r, 14 + 6*i).value = np.min(indicator)
-        my_sheet.cell(r, 15 + 6*i).value = np.median(indicator)
-        my_sheet.cell(r, 16 + 6*i).value = "No." + str(np.argmax(indicator) + 1)
-        my_sheet.cell(r, 17 + 6*i).value = "No." + str(np.argmin(indicator) + 1)
+        prefix = f'ind{i}'
+        row[f'{prefix}_avg'] = np.average(indicator)
+        row[f'{prefix}_max'] = np.max(indicator)
+        row[f'{prefix}_min'] = np.min(indicator)
+        row[f'{prefix}_median'] = np.median(indicator)
+        row[f'{prefix}_argmax'] = f'No.{np.argmax(indicator) + 1}'
+        row[f'{prefix}_argmin'] = f'No.{np.argmin(indicator) + 1}'
 
-    my_sheet.cell(r, 4).alignment = right_alignment
-    my_wb.save(sheet_name)
+    write_header = not os.path.exists(csv_path) or os.path.getsize(csv_path) == 0
+    pd.DataFrame([row]).to_csv(csv_path, mode='a', header=write_header, index=False)
     print("Save Successed!")
