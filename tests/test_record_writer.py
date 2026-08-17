@@ -93,3 +93,21 @@ class TestWriteRecord:
 
 
 import pytest
+
+
+class TestWriteTrajectory:
+    def setup_method(self):
+        logger.reset_log()
+
+    def test_normal_creates_csv(self, tmp_path, mocker):
+        mocker.patch('record_writer.logger.LOG_TRAJ', [
+            np.array([[0.1, 0.9], [0.5, 0.5]]),
+            np.array([[0.08, 0.92]]),
+        ])
+        record_writer.write_trajectory(str(tmp_path) + '/', 'ZDT2')
+        csv_path = tmp_path / 'trajectory_best.csv'
+        assert csv_path.exists()
+        import pandas as pd
+        df = pd.read_csv(csv_path)
+        assert list(df.columns) == ['generation', 'point_idx', 'f1', 'f2']
+        assert len(df) == 3  # 世代0:2点 + 世代1:1点

@@ -40,7 +40,7 @@ def display(pfs: list, idx: np.ndarray) -> None:
 
 
 def evaluation(targetDir: str, *indicators: np.ndarray) -> None:
-    paretoFronts = sorted(glob.glob(targetDir + '/*.csv'))
+    paretoFronts = sorted(glob.glob(targetDir + '/front_*.csv'))
     numOfSols = np.zeros(len(paretoFronts))
     cr = np.zeros(len(paretoFronts))
 

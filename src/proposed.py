@@ -76,6 +76,7 @@ class MASTER_A(MOPSO):
             # 全体アーカイブの更新
             self.arc_MASTER.update_archive(POS_COMB, FIT_COMB)
             db.store(self.arc_MASTER.fit_gb, 'e')
+            db.store_trajectory(self.arc_MASTER.fit_gb)
 
         return self.arc_MASTER
 
@@ -169,5 +170,6 @@ class MASTER_C(MOPSO):
             # 全体アーカイブの更新
             self.arc_MASTER_C.update_archive(POS_COMB, FIT_COMB)
             db.store(self.arc_MASTER_C.fit_gb, 'e')
+            db.store_trajectory(self.arc_MASTER_C.fit_gb)
 
         return self.arc_MASTER_C

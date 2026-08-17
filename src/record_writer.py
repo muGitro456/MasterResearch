@@ -28,6 +28,18 @@ def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_ti
     return dir_path
 
 
+def write_trajectory(log_dir: str, func_name: str) -> None:
+    col = ['f1', 'f2', 'f3'] if func_name == "DTLZ1" else ['f1', 'f2']
+    rows = []
+    for gen, fit_snapshot in enumerate(logger.LOG_TRAJ):
+        for idx, point in enumerate(fit_snapshot):
+            row = {'generation': gen, 'point_idx': idx}
+            for k, c in enumerate(col):
+                row[c] = point[k]
+            rows.append(row)
+    pd.DataFrame(rows).to_csv(os.path.join(log_dir, 'trajectory_best.csv'), index=False)
+
+
 def write_record(csv_path: str, trial: int, start_time: datetime.datetime, names: tuple[str, str, str],
                  comment: str, processing_time: float, n_sub: int, *indicators: np.ndarray) -> None:
     row: dict[str, object] = {

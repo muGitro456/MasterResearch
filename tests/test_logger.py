@@ -60,3 +60,19 @@ class TestLoggerWrite4debug:
         logger.write4debug('x', maxgen=1, m_num='1', m_name='TEST')
         captured = capsys.readouterr()
         assert "Error : logger" in captured.out
+
+
+class TestStoreTrajAndReset:
+    def setup_method(self):
+        logger.reset_log()
+
+    def test_store_trajectory_appends(self):
+        fit = np.array([[0.1, 0.9], [0.5, 0.5]])
+        logger.store_trajectory(fit)
+        assert len(logger.LOG_TRAJ) == 1
+        np.testing.assert_array_equal(logger.LOG_TRAJ[0], fit)
+
+    def test_reset_clears_log_traj(self):
+        logger.store_trajectory(np.array([[0.1, 0.9]]))
+        logger.reset_log()
+        assert len(logger.LOG_TRAJ) == 0

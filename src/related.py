@@ -26,6 +26,7 @@ class MOPSO:
 
             self.arc_MOPSO.update_archive(POS, FIT)
             db.store(self.arc_MOPSO.fit_gb, 'e')
+            db.store_trajectory(self.arc_MOPSO.fit_gb)
 
         return self.arc_MOPSO
 
@@ -54,6 +55,7 @@ class FPOMOPSO(MOPSO):
             # 全体アーカイブの更新
             self.arc_FPOMOPSO.update_archive(POS_COMB, FIT_COMB)
             db.store(self.arc_FPOMOPSO.fit_gb, 'e')
+            db.store_trajectory(self.arc_FPOMOPSO.fit_gb)
 
         return self.arc_FPOMOPSO
 
