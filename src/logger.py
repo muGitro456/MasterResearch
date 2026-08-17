@@ -2,9 +2,10 @@
 
 record_writer.py が CSV 出力時にここのグローバル変数を参照する。
 """
+import os
+
 import numpy as np
 import pandas as pd
-import os
 
 LOG_POS: list = []
 LOG_VEL: list = []

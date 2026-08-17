@@ -3,9 +3,10 @@
 logger.py のグローバル変数（LOG_POS, LOG_VEL, LOG_FIT）を読み取って出力する。
 """
 import datetime
+import os
+
 import numpy as np
 import pandas as pd
-import os
 
 import logger
 

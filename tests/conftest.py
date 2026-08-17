@@ -4,9 +4,21 @@ import pytest
 
 _SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
 _TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tools'))
-os.chdir(_SRC_DIR)
+
 sys.path.insert(0, _SRC_DIR)
 sys.path.insert(0, _TOOLS_DIR)
+
+
+def pytest_configure(config):
+    # monkeypatch.chdir alone is insufficient: agent.py/agent_subs.py open
+    # ./property/parameters.json at class-scope import time (collection phase).
+    os.chdir(_SRC_DIR)
+
+
+@pytest.fixture(autouse=True)
+def change_to_src_dir(monkeypatch):
+    """Ensure each test runs with CWD set to src directory."""
+    monkeypatch.chdir(_SRC_DIR)
 
 
 @pytest.fixture

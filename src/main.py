@@ -1,15 +1,20 @@
 # Pythonパッケージのインポート
+import datetime
+import json
+import sys
+import time
+
 import numpy as np
-import datetime, sys, json, time, os
 from tqdm import tqdm
 
-# 自作パッケージのインポート
-from related import MOPSO, FPOMOPSO, SENIOR
-from proposed import MASTER_A, MASTER_B, MASTER_C
-from field import Problem
 import logger
 import metrics
 import record_writer
+from field import Problem
+from proposed import MASTER_A, MASTER_B, MASTER_C
+
+# 自作パッケージのインポート
+from related import FPOMOPSO, MOPSO, SENIOR
 
 # VScodeでは文字選択→Ctrl+Shift+Pでコマンドパレット→upperと入力で大文字にできる"
 sheet_name = "../プログラム実行記録管理シート.csv"
@@ -18,7 +23,7 @@ def main(instruction: str) -> None:
     TRIAL = 100         # 試行回数
     isDebugged = False  # 粒子の動きを確認したいか
     isPlotted = True    # パレートフロントの情報を記録したいか
-    
+
     # JSONファイルのロード
     with open('./property/methods.json', 'r') as file1:
         meth_dict = json.load(file1)  # メソッドに関する辞書
@@ -28,15 +33,15 @@ def main(instruction: str) -> None:
         param_dict = json.load(file3)  # パラメータに関する辞書
     with open('./property/topologies.json') as file4:
         topo_dict = json.load(file4)  # トポロジーに関する辞書
-    
+
     startTime = datetime.datetime.now()  # プログラムの開始時間
     args = sys.argv  # コマンドライン引数
-    
+
     if "-C" in args:  # -C が入力されていれば
         comment = args[args.index("-C")+1]  # その次の引数をコメントとして記録する
     else:
         comment = "ただのテスト"
-    
+
     if len(instruction) == 3:  # MASTER_BまたはMASTER_Cメソッドを使用するのであれば
         METH_NUM, FUNC_NUM, TOPO_NUM = instruction[0], instruction[1], instruction[2]  # メソッド番号、関数番号、トポロジー番号の３つに分離する
     else:
@@ -51,7 +56,7 @@ def main(instruction: str) -> None:
 
     FUNC_NAME = func_dict[FUNC_NUM]["name"]  # 関数の名前
     problem = Problem(func_dict[FUNC_NUM])   # テスト問題を生成
-    
+
     numOfGBs = np.zeros(TRIAL)  # アーカイブに保存されたGBの個数
     cr = np.zeros(TRIAL)        # 被覆率
     print("Start time:", startTime.strftime('%Y/%m/%d %H:%M:%S'))

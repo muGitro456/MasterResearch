@@ -1,23 +1,26 @@
 from typing import Any
-from tqdm import tqdm
+
 import numpy as np
-from agent import PredatorsSenior, Neighborhood
-from agent_subs import SubSwarm, Neighborhood_C
-from topology import Topology
+from tqdm import tqdm
+
+import logger as db
+from agent import Neighborhood, PredatorsSenior
+from agent_subs import Neighborhood_C, SubSwarm
+from archive import Archive
 from field import Problem
 from related import MOPSO
-from archive import Archive
-import logger as db
+from topology import Topology
+
 
 class MASTER_A(MOPSO):
     def __init__(self, params: dict[str, Any], problem: Problem, topology_dict: dict[str, Any]) -> None:
         super().__init__(params, problem)
-        
+
         self.N_SIZE = topology_dict["N_SIZE"]
 
         # トポロジーの初期化
         self.my_topology = Topology(self.N, topology_dict["N_SIZE"], topology_dict["name"])
-        
+
         # 近傍粒子群とサブアーカイブの初期化
         self.init_neighbors()
 
@@ -44,7 +47,7 @@ class MASTER_A(MOPSO):
             sub_arc = Archive(neighbor.POS, neighbor.FIT, self.NA_MAX, self.field.D, self.field.K)
             self.neighbors.append(neighbor)
             self.sub_arc_MOPSO.append(sub_arc)
-    
+
     def simulation(self) -> Archive:
         for g in tqdm(range(self.GEN_MAX), desc="Generation", leave=False):
             # MOPSOの処理
@@ -102,8 +105,8 @@ class MASTER_C(MOPSO):
 
         # トポロジーの初期化
         self.my_topology = Topology(self.N_SUB_SWARM, topology_dict["N_SIZE"], topology_dict["name"])
-        
-        # サブ粒子群とサブアーカイブの初期化        
+
+        # サブ粒子群とサブアーカイブの初期化
         self.init_sub_swarm()
 
         self.neighbors_C: list[Neighborhood_C] = []
@@ -113,7 +116,7 @@ class MASTER_C(MOPSO):
             sub_arc = Archive(neighbor_c.POS, neighbor_c.FIT, self.NA_MAX, self.field.D, self.field.K)
             self.neighbors_C.append(neighbor_c)
             self.sub_arc_MOPSO.append(sub_arc)
-    
+
         # FPO粒子群とアーカイブの初期化
         self.sw_FPO = PredatorsSenior(self.N, self.field)
         self.arc_FPO = Archive(self.sw_FPO.POS, self.sw_FPO.FIT, self.NA_MAX, self.field.D, self.field.K)
@@ -125,26 +128,26 @@ class MASTER_C(MOPSO):
         self.sub_sw_MOPSO: list[SubSwarm] = []
         for i in range(self.N_SUB_SWARM):
             self.sub_sw_MOPSO.append(SubSwarm(self.N_SUB_PARTICLE, self.sw_MOPSO, i, self.field))
-            
+
     def simulation(self) -> Archive:
         for g in tqdm(range(self.GEN_MAX), desc="Generation", leave=False):
             # MOPSOの処理
             leader = self.arc_MOPSO.select_leader()
             for i in range(self.N_SUB_SWARM):
                 # 各サブアーカイブにおけるリーダーの中から最も良いものをLBESTとする.
-                
+
                 sub_arcs_pos = np.vstack((self.sub_arc_MOPSO[int(self.my_topology.relation[i][0])].pos_gb, \
                                           self.sub_arc_MOPSO[int(self.my_topology.relation[i][1])].pos_gb, \
                                           self.sub_arc_MOPSO[int(self.my_topology.relation[i][2])].pos_gb, \
                                           self.sub_arc_MOPSO[int(self.my_topology.relation[i][3])].pos_gb, \
                                           self.sub_arc_MOPSO[int(self.my_topology.relation[i][4])].pos_gb))
-                
+
                 sub_arcs_fit = np.vstack((self.sub_arc_MOPSO[int(self.my_topology.relation[i][0])].fit_gb, \
                                           self.sub_arc_MOPSO[int(self.my_topology.relation[i][1])].fit_gb, \
                                           self.sub_arc_MOPSO[int(self.my_topology.relation[i][2])].fit_gb, \
                                           self.sub_arc_MOPSO[int(self.my_topology.relation[i][3])].fit_gb, \
                                           self.sub_arc_MOPSO[int(self.my_topology.relation[i][4])].fit_gb))
-                
+
                 sub_arcs = Archive(sub_arcs_pos, sub_arcs_fit, self.NA_MAX, self.field.D, self.field.K)
                 lbest = sub_arcs.select_leader()
                 #lbest = self.sub_arc_MOPSO[i].select_leader() # 近傍サブアーカイブからリーダーを選択するか要検討
