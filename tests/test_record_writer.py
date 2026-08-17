@@ -44,50 +44,52 @@ class TestWrite4plot:
 
 
 class TestWriteRecord:
-    def test_normal_saves_workbook(self, mocker):
-        mock_cell = mocker.Mock()
-        mock_cell.value = None
-        mock_ws = mocker.Mock()
-        mock_ws.cell.return_value = mock_cell
-        mock_wb = mocker.Mock()
-        mock_wb.__getitem__ = mocker.Mock(return_value=mock_ws)
-        mocker.patch('openpyxl.load_workbook', return_value=mock_wb)
-
+    def test_normal_creates_file_with_header(self, mocker, tmp_path):
+        csv_path = str(tmp_path / 'record.csv')
         record_writer.write_record(
-            'dummy.xlsx', 100,
+            csv_path, 100,
             datetime.datetime(2024, 1, 1, 12, 0, 0),
             ('ZDT2', 'MOPSO', 'None'),
             'test comment', 1.23, 0,
             np.array([0.5, 0.6, 0.7]),
-            np.array([0.8, 0.9, 1.0]),
         )
-        mock_wb.save.assert_called_once_with('dummy.xlsx')
+        import pandas as pd
+        df = pd.read_csv(csv_path)
+        assert len(df) == 1
+        assert 'func_name' in df.columns
+        assert df['func_name'].iloc[0] == 'ZDT2'
 
-    def test_normal_finds_empty_row(self, mocker):
-        row1_cell = mocker.Mock()
-        row1_cell.value = "existing_data"
-        row2_cell = mocker.Mock()
-        row2_cell.value = None
-
-        call_count = [0]
-
-        def cell_side_effect(row, column):
-            call_count[0] += 1
-            if row == 1 and column == 1:
-                return row1_cell
-            return row2_cell
-
-        mock_ws = mocker.Mock()
-        mock_ws.cell.side_effect = cell_side_effect
-        mock_wb = mocker.Mock()
-        mock_wb.__getitem__ = mocker.Mock(return_value=mock_ws)
-        mocker.patch('openpyxl.load_workbook', return_value=mock_wb)
-
-        record_writer.write_record(
-            'dummy.xlsx', 100,
+    def test_normal_appends_row_when_file_exists(self, mocker, tmp_path):
+        csv_path = str(tmp_path / 'record.csv')
+        args = (
+            100,
             datetime.datetime(2024, 1, 1, 12, 0, 0),
             ('ZDT2', 'MOPSO', 'None'),
-            'test comment', 1.23, 0,
+            'test', 1.0, 0,
             np.array([0.5]),
         )
-        mock_wb.save.assert_called_once_with('dummy.xlsx')
+        record_writer.write_record(csv_path, *args)
+        record_writer.write_record(csv_path, *args)
+
+        import pandas as pd
+        df = pd.read_csv(csv_path)
+        assert len(df) == 2
+
+    def test_normal_writes_indicator_stats(self, tmp_path):
+        csv_path = str(tmp_path / 'record.csv')
+        indicator = np.array([0.5, 0.8, 0.3])
+        record_writer.write_record(
+            csv_path, 10,
+            datetime.datetime(2024, 6, 1, 0, 0, 0),
+            ('ZDT1', 'SENIOR', 'Ring_5'),
+            '', 2.0, 50,
+            indicator,
+        )
+        import pandas as pd
+        df = pd.read_csv(csv_path)
+        assert df['ind0_avg'].iloc[0] == pytest.approx(np.average(indicator))
+        assert df['ind0_max'].iloc[0] == pytest.approx(np.max(indicator))
+        assert df['ind0_argmax'].iloc[0] == f'No.{np.argmax(indicator) + 1}'
+
+
+import pytest
