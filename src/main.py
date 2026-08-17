@@ -1,6 +1,6 @@
 # Pythonパッケージのインポート
 import numpy as np
-import datetime, sys, json, requests, time, os
+import datetime, sys, json, time, os
 from tqdm import tqdm
 
 # 自作パッケージのインポート
@@ -95,15 +95,6 @@ def main(instruction: str) -> None:
         metrics.evaluation(log_dir, numOfGBs, cr)
     record_writer.write_record(sheet_name, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
 
-# PythonからLINEへ通知を送る関数
-# 参考にしたサイト: https://hiyokonoko.com/%E3%80%90%E5%88%9D%E5%BF%83%E8%80%85%E5%90%91%E3%81%91%E3%80%9110%E5%88%86%E3%81%A7%E3%81%A7%E3%81%8D%E3%82%8B%EF%BC%81python%E3%81%AE%E5%AE%9F%E8%A1%8C%E7%B5%90%E6%9E%9C%E3%82%92%E3%82%B9%E3%83%9E/862/
-def line_notify(message: str) -> None:
-    line_notify_token = os.environ.get("LINE_NOTIFY_TOKEN", "") # アクセストークン
-    line_notify_api = 'https://notify-api.line.me/api/notify'
-    payload = {'message': message} # 引数として自由に入力することができます
-    headers = {'Authorization': 'Bearer ' + line_notify_token}
-    requests.post(line_notify_api, data=payload, headers=headers)
-
 def file_is_locked(filepath: str) -> bool:
     try:
         f = open(filepath, 'a')
@@ -122,7 +113,5 @@ if __name__ == "__main__":  # pragma: no cover
 
         for instruction in instruction_set:
             main(instruction)
-        text = "\nプログラムの実行を完了しました\n結果を確認してください"
-        line_notify(text)
     else:
         print("ERROR: {} がロックされています。閉じてから実行してください".format(sheet_name))
