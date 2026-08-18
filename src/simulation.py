@@ -1,6 +1,7 @@
 """PSO シミュレーションのコアロジック。"""
 # Pythonパッケージのインポート
 import datetime
+import os
 import time
 
 import numpy as np
@@ -95,6 +96,9 @@ def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト'
     record_writer.write_record(log_file, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
 
 def file_is_locked(filepath: str) -> bool:
+    dir_name = os.path.dirname(filepath)
+    if dir_name:
+        os.makedirs(dir_name, exist_ok=True)
     try:
         f = open(filepath, 'a')
         f.close()

@@ -13,12 +13,12 @@ from . import logger
 
 def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_time: datetime.datetime,
                 output_dir: str = 'backLog') -> str:
-    dir_path = (
-        output_dir.rstrip('/') + '/'
-        + nums[0] + '_' + m_name + '/'
-        + nums[1] + '_' + f_name + '/'
-        + s_time.strftime('%Y%m%d_%H%M%S') + '/'
-    )
+    dir_path = os.path.join(
+        output_dir,
+        nums[0] + '_' + m_name,
+        nums[1] + '_' + f_name,
+        s_time.strftime('%Y%m%d_%H%M%S'),
+    ) + '/'
     os.makedirs(dir_path, exist_ok=True)
 
     col = ['f1', 'f2', 'f3'] if f_name == "DTLZ1" else ['f1', 'f2']
@@ -64,6 +64,10 @@ def write_record(csv_path: str, trial: int, start_time: datetime.datetime, names
         row[f'{prefix}_median'] = np.median(indicator)
         row[f'{prefix}_argmax'] = f'No.{np.argmax(indicator) + 1}'
         row[f'{prefix}_argmin'] = f'No.{np.argmin(indicator) + 1}'
+
+    dir_name = os.path.dirname(csv_path)
+    if dir_name:
+        os.makedirs(dir_name, exist_ok=True)
 
     write_header = not os.path.exists(csv_path) or os.path.getsize(csv_path) == 0
     pd.DataFrame([row]).to_csv(csv_path, mode='a', header=write_header, index=False)

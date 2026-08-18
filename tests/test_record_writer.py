@@ -96,6 +96,19 @@ class TestWriteRecord:
         df = pd.read_csv(csv_path)
         assert len(df) == 2
 
+    def test_normal_creates_missing_parent_directory(self, tmp_path):
+        csv_path = str(tmp_path / 'nested' / 'dir' / 'record.csv')
+        record_writer.write_record(
+            csv_path, 1,
+            datetime.datetime(2024, 1, 1, 12, 0, 0),
+            ('ZDT2', 'MOPSO', 'None'),
+            'test', 1.0, 0,
+            np.array([0.5]),
+        )
+        import pandas as pd
+        df = pd.read_csv(csv_path)
+        assert len(df) == 1
+
     def test_normal_writes_indicator_stats(self, tmp_path):
         csv_path = str(tmp_path / 'record.csv')
         indicator = np.array([0.5, 0.8, 0.3])

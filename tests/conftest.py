@@ -12,13 +12,15 @@ sys.path.insert(0, _TOOLS_DIR)
 
 
 @pytest.fixture(autouse=True)
-def change_to_src_dir(monkeypatch):
-    """Ensure each test runs with CWD set to src directory.
+def isolate_cwd(tmp_path, monkeypatch):
+    """Run each test from an empty temp directory.
 
-    record_writer.py / logger.py が '../backLog/' のような CWD 相対パスに
-    依存しているため、この chdir は Phase E2 で解消するまで残す。
+    Phase E2 で record_writer.py / logger.py / simulation.py の出力先が
+    CWD 基準で解決されるようになったため、テストを src/ 等の実ディレクトリに
+    固定する必要はなくなった。むしろ空の tmp_path で実行することで、CWD
+    非依存性が壊れた場合にテストが失敗するようにする。
     """
-    monkeypatch.chdir(_SRC_DIR)
+    monkeypatch.chdir(tmp_path)
 
 
 @pytest.fixture
