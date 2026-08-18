@@ -41,7 +41,7 @@ def animate_trajectory(csv_path: str, interval: int = 200) -> None:
     plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     if len(sys.argv) < 2:
         print('Usage: python graphDrawing.py <trajectory_csv_path> [interval_ms]')
         sys.exit(1)

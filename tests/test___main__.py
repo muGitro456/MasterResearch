@@ -1,6 +1,54 @@
 """Tests for src/__main__.py CLI entry point."""
 import sys
+from unittest.mock import patch
 import src.__main__ as entry
+
+
+_MOCK_METHODS = {
+    '1': {'name': 'MOPSO'},
+    '6': {'name': 'MASTER_C'},
+}
+_MOCK_FUNCTIONS = {'9': {'name': 'ZDT2'}}
+_MOCK_TOPOLOGIES = {'0': {'name': 'なし'}, '1': {'name': 'Ring'}}
+
+
+class TestLoadJson:
+    def test_returns_dict(self):
+        result = entry._load_json('methods.json')
+        assert isinstance(result, dict)
+        assert len(result) > 0
+
+    def test_has_name_field(self):
+        result = entry._load_json('methods.json')
+        for v in result.values():
+            assert 'name' in v
+
+
+class TestSelectInteractive:
+    def _patch_load(self, mocker):
+        mocker.patch.object(entry, '_load_json', side_effect=lambda name: {
+            'methods.json': _MOCK_METHODS,
+            'functions.json': _MOCK_FUNCTIONS,
+            'topologies.json': _MOCK_TOPOLOGIES,
+        }[name])
+
+    def test_non_master_method_returns_two_digit_instruction(self, mocker):
+        self._patch_load(mocker)
+        with patch('builtins.input', side_effect=['1', '9']):
+            result = entry._select_interactive()
+        assert result == ['19']
+
+    def test_master_c_method_returns_three_digit_instruction(self, mocker):
+        self._patch_load(mocker)
+        with patch('builtins.input', side_effect=['6', '9', '1']):
+            result = entry._select_interactive()
+        assert result == ['691']
+
+    def test_returns_list(self, mocker):
+        self._patch_load(mocker)
+        with patch('builtins.input', side_effect=['1', '9']):
+            result = entry._select_interactive()
+        assert isinstance(result, list)
 
 
 class TestParseArgs:
