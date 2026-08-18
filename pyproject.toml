@@ -12,6 +12,7 @@ dependencies = [
     "pandas>=2.3",
     "tqdm>=4.68",
     "matplotlib>=3.10",
+    "pyyaml>=6.0",
 ]
 
 [project.scripts]
@@ -20,3 +21,6 @@ masterresearch = "src.__main__:cli"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src*"]
+
+[tool.setuptools.package-data]
+src = ["configs/*.yaml"]

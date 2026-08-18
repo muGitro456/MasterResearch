@@ -1,9 +1,7 @@
 import numpy as np
-import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from metrics import cover_rate
-import metrics
+from src.metrics import cover_rate
+from src import metrics
 
 
 def test_normal_full_coverage():

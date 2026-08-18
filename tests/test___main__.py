@@ -12,24 +12,12 @@ _MOCK_FUNCTIONS = {'9': {'name': 'ZDT2'}}
 _MOCK_TOPOLOGIES = {'0': {'name': 'なし'}, '1': {'name': 'Ring'}}
 
 
-class TestLoadJson:
-    def test_returns_dict(self):
-        result = entry._load_json('methods.json')
-        assert isinstance(result, dict)
-        assert len(result) > 0
-
-    def test_has_name_field(self):
-        result = entry._load_json('methods.json')
-        for v in result.values():
-            assert 'name' in v
-
-
 class TestSelectInteractive:
     def _patch_load(self, mocker):
-        mocker.patch.object(entry, '_load_json', side_effect=lambda name: {
-            'methods.json': _MOCK_METHODS,
-            'functions.json': _MOCK_FUNCTIONS,
-            'topologies.json': _MOCK_TOPOLOGIES,
+        mocker.patch.object(entry, 'load_yaml', side_effect=lambda name: {
+            'methods.yaml': _MOCK_METHODS,
+            'functions.yaml': _MOCK_FUNCTIONS,
+            'topologies.yaml': _MOCK_TOPOLOGIES,
         }[name])
 
     def test_non_master_method_returns_two_digit_instruction(self, mocker):
@@ -96,6 +84,7 @@ class TestCli:
     def test_manual_mode_dispatches_run_main(self, mocker):
         """--manual CODE calls run_main with correct args"""
         import src.__main__ as entry
+        mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mock_run = mocker.patch.object(entry, 'run_main')
         mock_notify = mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', ['masterresearch', '--manual', '691', '--trial', '1', '--comment', 'test'])
@@ -106,6 +95,7 @@ class TestCli:
     def test_manual_mode_multiple_codes(self, mocker):
         """--manual with multiple codes calls run_main for each"""
         import src.__main__ as entry
+        mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mock_run = mocker.patch.object(entry, 'run_main')
         mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', ['masterresearch', '--manual', '27', '37'])
@@ -115,6 +105,7 @@ class TestCli:
     def test_interactive_mode_routes_to_select(self, mocker):
         """No --manual flag calls _select_interactive"""
         import src.__main__ as entry
+        mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mock_select = mocker.patch.object(entry, '_select_interactive', return_value=['691'])
         mock_run = mocker.patch.object(entry, 'run_main')
         mocker.patch.object(entry, '_notify')
@@ -126,8 +117,23 @@ class TestCli:
     def test_notify_called_after_all_runs(self, mocker):
         """_notify fires exactly once, after all instructions complete"""
         import src.__main__ as entry
+        mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mocker.patch.object(entry, 'run_main')
         mock_notify = mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', ['masterresearch', '--manual', '27', '37'])
         entry.cli()
         mock_notify.assert_called_once_with('プログラムの実行が完了しました')
+
+    def test_locked_file_aborts_without_running(self, mocker, capsys):
+        """When the record CSV is locked, cli() prints an error and never runs or notifies"""
+        import src.__main__ as entry
+        mocker.patch.object(entry, 'file_is_locked', return_value=True)
+        mock_run = mocker.patch.object(entry, 'run_main')
+        mock_notify = mocker.patch.object(entry, '_notify')
+        mocker.patch.object(entry, '_select_interactive')
+        mocker.patch('sys.argv', ['masterresearch', '--manual', '691'])
+        entry.cli()
+        captured = capsys.readouterr()
+        assert "ロックされています" in captured.out
+        mock_run.assert_not_called()
+        mock_notify.assert_not_called()

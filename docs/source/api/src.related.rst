@@ -1,7 +1,7 @@
 src.related
 ===========
 
-.. automodule:: related
+.. automodule:: src.related
    :members:
    :undoc-members:
    :show-inheritance:

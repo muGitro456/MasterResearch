@@ -1,29 +1,20 @@
 """python -m masterresearch のエントリポイント。"""
 import argparse
-import json
 import os
 import subprocess
-import sys
-from typing import Any
+
+from .config_loader import load_yaml
+from .simulation import file_is_locked, sheet_name
+from .simulation import main as run_main
 
 _SRC_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, _SRC_DIR)
-os.chdir(_SRC_DIR)
-
-from main import main as run_main  # noqa: E402
-
-
-def _load_json(name: str) -> dict[str, Any]:
-    path = os.path.join(_SRC_DIR, 'property', name)
-    with open(path, encoding='utf-8') as f:
-        data: dict[str, Any] = json.load(f)
-    return data
+os.chdir(_SRC_DIR)  # record_writer/logger の '../backLog/' 相対パス解決のため（Phase E2 で解消予定）
 
 
 def _select_interactive() -> list[str]:
-    methods = _load_json('methods.json')
-    functions = _load_json('functions.json')
-    topologies = _load_json('topologies.json')
+    methods = load_yaml('methods.yaml')
+    functions = load_yaml('functions.yaml')
+    topologies = load_yaml('topologies.yaml')
 
     print("\n=== MasterResearch Interactive Mode ===\n")
 
@@ -78,6 +69,10 @@ def _parse_args() -> argparse.Namespace:
 
 
 def cli() -> None:
+    if file_is_locked(sheet_name):
+        print("ERROR: {} がロックされています。閉じてから実行してください".format(sheet_name))
+        return
+
     args = _parse_args()
 
     if args.manual:

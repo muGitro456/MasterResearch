@@ -1,7 +1,7 @@
 src.field
 =========
 
-.. automodule:: field
+.. automodule:: src.field
    :members:
    :undoc-members:
    :show-inheritance:

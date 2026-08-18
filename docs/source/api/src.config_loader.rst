@@ -1,7 +1,7 @@
-src.record_writer
+src.config_loader
 =================
 
-.. automodule:: src.record_writer
+.. automodule:: src.config_loader
    :members:
    :undoc-members:
    :show-inheritance:

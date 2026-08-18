@@ -1,7 +1,7 @@
 src.metrics
 ===========
 
-.. automodule:: metrics
+.. automodule:: src.metrics
    :members:
    :undoc-members:
    :show-inheritance:

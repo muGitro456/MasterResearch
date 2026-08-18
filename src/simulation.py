@@ -1,20 +1,17 @@
 """PSO シミュレーションのコアロジック。"""
 # Pythonパッケージのインポート
 import datetime
-import json
 import time
 
 import numpy as np
 from tqdm import tqdm
 
-import logger
-import metrics
-import record_writer
-from field import Problem
-from proposed import MASTER_A, MASTER_B, MASTER_C
-
 # 自作パッケージのインポート
-from related import FPOMOPSO, MOPSO, SENIOR
+from . import logger, metrics, record_writer
+from .config_loader import load_yaml
+from .field import Problem
+from .proposed import MASTER_A, MASTER_B, MASTER_C
+from .related import FPOMOPSO, MOPSO, SENIOR
 
 # VScodeでは文字選択→Ctrl+Shift+Pでコマンドパレット→upperと入力で大文字にできる"
 sheet_name = "../プログラム実行記録管理シート.csv"
@@ -24,15 +21,10 @@ def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト'
     isDebugged = False  # 粒子の動きを確認したいか
     isPlotted = True    # パレートフロントの情報を記録したいか
 
-    # JSONファイルのロード
-    with open('./property/methods.json', 'r') as file1:
-        meth_dict = json.load(file1)  # メソッドに関する辞書
-    with open('./property/functions.json', 'r') as file2:
-        func_dict = json.load(file2)  # ベンチマーク関数に関する辞書
-    with open('./property/parameters.json', 'r') as file3:
-        param_dict = json.load(file3)  # パラメータに関する辞書
-    with open('./property/topologies.json') as file4:
-        topo_dict = json.load(file4)  # トポロジーに関する辞書
+    meth_dict = load_yaml('methods.yaml')  # メソッドに関する辞書
+    func_dict = load_yaml('functions.yaml')  # ベンチマーク関数に関する辞書
+    param_dict = load_yaml('parameters.yaml')  # パラメータに関する辞書
+    topo_dict = load_yaml('topologies.yaml')  # トポロジーに関する辞書
 
     startTime = datetime.datetime.now()  # プログラムの開始時間
 
@@ -111,15 +103,3 @@ def file_is_locked(filepath: str) -> bool:
         return True
     else:
         return False
-
-if __name__ == "__main__":  # pragma: no cover
-    if not file_is_locked(sheet_name):
-        instruction_set = ["691"]
-        #instruction_set = ["27", "37", "47", "572", "573", "574", "575"]
-        #instruction_set = ["515", "525", "535", "545", "555", "565"]
-        #instruction_set = ["41", "42", "43", "44", "45", "46"]
-
-        for instruction in instruction_set:
-            main(instruction)
-    else:
-        print("ERROR: {} がロックされています。閉じてから実行してください".format(sheet_name))

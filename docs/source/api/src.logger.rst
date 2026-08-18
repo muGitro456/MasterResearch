@@ -1,7 +1,7 @@
 src.logger
 ==========
 
-.. automodule:: logger
+.. automodule:: src.logger
    :members:
    :undoc-members:
    :show-inheritance:
