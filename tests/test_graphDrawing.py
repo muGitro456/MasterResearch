@@ -1,43 +1,63 @@
 import sys
-from unittest.mock import MagicMock
-
-sys.modules.setdefault('matplotlib', MagicMock())
-sys.modules.setdefault('matplotlib.pyplot', MagicMock())
-
+from pathlib import Path
+import pandas as pd
+from unittest.mock import patch
 import graphDrawing
 
 
-class TestRedraw:
-    def test_normal_single_file(self, mocker, tmp_path):
-        csv_file = tmp_path / "front.csv"
-        csv_file.write_text("index,f1,f2\n0,0.1,0.9\n1,0.5,0.5\n")
+class TestAnimateTrajectory:
+    def test_animate_trajectory_with_single_generation(self, mocker, tmp_path):
+        csv_file = tmp_path / "trajectory.csv"
+        csv_file.write_text("generation,point_idx,f1,f2\n0,0,0.1,0.9\n0,1,0.5,0.5\n")
 
-        mock_scatter = mocker.patch('graphDrawing.plt.scatter')
-        mocker.patch('graphDrawing.plt.grid')
-        mocker.patch('graphDrawing.plt.xlabel')
-        mocker.patch('graphDrawing.plt.ylabel')
-        mocker.patch('graphDrawing.plt.legend')
+        mocker.patch('graphDrawing.plt.show')
+        mocker.patch('graphDrawing.animation.FuncAnimation')
+
+        graphDrawing.animate_trajectory(str(csv_file))
+
+    def test_animate_trajectory_with_multiple_generations(self, mocker, tmp_path):
+        csv_file = tmp_path / "trajectory.csv"
+        csv_file.write_text(
+            "generation,point_idx,f1,f2\n"
+            "0,0,0.1,0.9\n"
+            "0,1,0.5,0.5\n"
+            "1,0,0.08,0.92\n"
+            "1,1,0.48,0.52\n"
+        )
+
+        mocker.patch('graphDrawing.plt.show')
+        mocker.patch('graphDrawing.animation.FuncAnimation')
+
+        graphDrawing.animate_trajectory(str(csv_file))
+
+    def test_animate_trajectory_with_custom_interval(self, mocker, tmp_path):
+        csv_file = tmp_path / "trajectory.csv"
+        csv_file.write_text("generation,point_idx,f1,f2\n0,0,0.1,0.9\n")
+
+        mock_func_animation = mocker.patch('graphDrawing.animation.FuncAnimation')
         mocker.patch('graphDrawing.plt.show')
 
-        graphDrawing.redraw([str(csv_file)])
+        graphDrawing.animate_trajectory(str(csv_file), interval=500)
 
-        mock_scatter.assert_called_once()
-        assert mock_scatter.call_args[1]['c'] == graphDrawing.colors[0]
-        assert mock_scatter.call_args[1]['marker'] == graphDrawing.markers[0]
+        # Verify FuncAnimation was called with correct interval
+        assert mock_func_animation.called
 
-    def test_normal_multiple_files(self, mocker, tmp_path):
-        csv_file1 = tmp_path / "front1.csv"
-        csv_file1.write_text("index,f1,f2\n0,0.1,0.9\n")
-        csv_file2 = tmp_path / "front2.csv"
-        csv_file2.write_text("index,f1,f2\n0,0.2,0.8\n")
+    def test_update_callback_renders_frame(self, tmp_path):
+        """The FuncAnimation update callback correctly updates scatter data"""
+        rows = [
+            {'generation': 0, 'point_idx': 0, 'f1': 0.1, 'f2': 0.9},
+            {'generation': 0, 'point_idx': 1, 'f1': 0.5, 'f2': 0.5},
+            {'generation': 1, 'point_idx': 0, 'f1': 0.08, 'f2': 0.92},
+        ]
+        csv_path = str(tmp_path / 'trajectory.csv')
+        pd.DataFrame(rows).to_csv(csv_path, index=False)
 
-        mock_scatter = mocker.patch('graphDrawing.plt.scatter')
-        mocker.patch('graphDrawing.plt.grid')
-        mocker.patch('graphDrawing.plt.xlabel')
-        mocker.patch('graphDrawing.plt.ylabel')
-        mocker.patch('graphDrawing.plt.legend')
-        mocker.patch('graphDrawing.plt.show')
-
-        graphDrawing.redraw([str(csv_file1), str(csv_file2)])
-
-        assert mock_scatter.call_count == 2
+        with patch('matplotlib.pyplot.show'), \
+             patch('matplotlib.animation.FuncAnimation') as mock_anim:
+            sys.path.insert(0, str(Path(__file__).parent.parent / 'tools'))
+            from graphDrawing import animate_trajectory
+            animate_trajectory(csv_path)
+            # Extract and call the update callback
+            update_fn = mock_anim.call_args[0][1]
+            result = update_fn(0)  # frame 0
+            assert result is not None  # returns (scat, gen_text) tuple

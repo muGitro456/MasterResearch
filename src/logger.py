@@ -2,19 +2,26 @@
 
 record_writer.py が CSV 出力時にここのグローバル変数を参照する。
 """
+import os
+
 import numpy as np
 import pandas as pd
-import os
 
 LOG_POS: list = []
 LOG_VEL: list = []
 LOG_FIT: list = []
+LOG_TRAJ: list = []
 
 
 def reset_log() -> None:
     LOG_POS.clear()
     LOG_VEL.clear()
     LOG_FIT.clear()
+    LOG_TRAJ.clear()
+
+
+def store_trajectory(fit_gb: np.ndarray) -> None:
+    LOG_TRAJ.append(fit_gb.copy())
 
 
 def store(var: np.ndarray, target: str) -> None:

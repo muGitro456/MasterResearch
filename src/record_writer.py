@@ -3,9 +3,10 @@
 logger.py のグローバル変数（LOG_POS, LOG_VEL, LOG_FIT）を読み取って出力する。
 """
 import datetime
+import os
+
 import numpy as np
 import pandas as pd
-import os
 
 import logger
 
@@ -25,6 +26,18 @@ def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_ti
     df.to_csv(os.path.join(dir_path, 'front_' + nums[0] + nums[1] + '_' + str(trial).zfill(3)) + '.csv')
 
     return dir_path
+
+
+def write_trajectory(log_dir: str, func_name: str) -> None:
+    col = ['f1', 'f2', 'f3'] if func_name == "DTLZ1" else ['f1', 'f2']
+    rows = []
+    for gen, fit_snapshot in enumerate(logger.LOG_TRAJ):
+        for idx, point in enumerate(fit_snapshot):
+            row = {'generation': gen, 'point_idx': idx}
+            for k, c in enumerate(col):
+                row[c] = point[k]
+            rows.append(row)
+    pd.DataFrame(rows).to_csv(os.path.join(log_dir, 'trajectory_best.csv'), index=False)
 
 
 def write_record(csv_path: str, trial: int, start_time: datetime.datetime, names: tuple[str, str, str],

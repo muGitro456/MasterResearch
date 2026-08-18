@@ -1,7 +1,11 @@
 from __future__ import annotations
+
+import copy
+import json
 from typing import TYPE_CHECKING
+
 import numpy as np
-import copy, json
+
 import logger as db
 
 if TYPE_CHECKING:
@@ -20,13 +24,13 @@ class Swarm:
     def __init__(self, N: int, field: SearchSpace) -> None:
         self.N = N
         self.my_field = field
-        
+
         self.POS = field.lower + (field.upper - field.lower) * np.random.rand(self.N, field.D)
         self.VEL = np.zeros((self.N, field.D))
         self.FIT = field.update_fit(self.POS)
         self.POS_PB = copy.deepcopy(self.POS)
         self.FIT_PB = copy.deepcopy(self.FIT)
-    
+
     def explore(self, generation: int, leader: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         self.update_vel(leader, self.my_field, generation)
 
@@ -40,7 +44,7 @@ class Swarm:
         self.my_field.update_fit(self.POS_PB)
 
         return self.POS, self.FIT
-    
+
     def update_vel(self, gbL: np.ndarray, my_field: SearchSpace, gen: int) -> None:
         VEL_TMP = Swarm.W * self.VEL \
                 + Swarm.C1 * np.random.rand(self.N, my_field.D) * (self.POS_PB - self.POS) \
@@ -51,7 +55,7 @@ class Swarm:
     def update_pos(self, field: SearchSpace) -> None:
         _POS_TMP = self.POS + self.VEL
         self.POS, self.VEL = field.check_boundaries(_POS_TMP, self.VEL)
-    
+
     def update_pb(self) -> None:
         for i in range(self.N):
             if all(self.FIT[i] < self.FIT_PB[i]):
@@ -68,7 +72,7 @@ class Predators(Swarm):
     def __init__(self, N: int, field: SearchSpace) -> None:
         super().__init__(N, field)
         self.RIVALS = np.zeros((self.N, field.D))
-    
+
     def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:  # type: ignore[override]
         self.update_rivals()
         self.update_vel(self.my_field, generation)
@@ -112,7 +116,7 @@ class PredatorsSenior(Predators):
 
     def __init__(self, N: int, field: SearchSpace) -> None:
         super().__init__(N, field)
-    
+
     def explore(self, generation: int) -> tuple[np.ndarray, np.ndarray]:  # type: ignore[override]
         self.update_rivals()
         self.update_vel(self.my_field, generation)
@@ -141,7 +145,7 @@ class PredatorsSenior(Predators):
     def update_vel(self, my_field: SearchSpace, gen: int) -> None:  # type: ignore[override]
         W_FPO = Predators.W_INI + \
                 (Predators.W_END - Predators.W_INI) * (gen / my_field.GEN_MAX)
-        
+
         VEL_TMP = W_FPO * Predators.C3 * np.random.rand(self.N, my_field.D) * (self.RIVALS - self.POS) \
                         + PredatorsSenior.C4 * np.random.rand(self.N, my_field.D) * (self.POS_PB - self.POS)
         self.VEL = my_field.speedmeter(VEL_TMP, gen)
@@ -167,7 +171,7 @@ class Neighborhood:
             self.FIT[m] = swarm.FIT[idx_edge]
             self.POS_PB[m] = swarm.POS_PB[idx_edge]
             self.FIT_PB[m] = swarm.FIT_PB[idx_edge]
-    
+
     def explore(self, generation: int, leader: np.ndarray, LBEST: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         self.update_vel(leader, LBEST, self.my_field, generation)
 
@@ -181,7 +185,7 @@ class Neighborhood:
         self.my_field.update_fit(self.POS_PB)
 
         return self.POS, self.FIT
-    
+
     def update_vel(self, gbL: np.ndarray, lb: np.ndarray, my_field: SearchSpace, gen: int) -> None:
         VEL_TMP = self.my_swarm.W * self.VEL \
                 + self.my_swarm.C1 * np.random.rand(self.N_SIZE, my_field.D) * (self.POS_PB - self.POS) \

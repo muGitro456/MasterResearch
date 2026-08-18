@@ -2,9 +2,10 @@
 
 database.py（tools/）および main.py から呼び出される。
 """
+import glob
+
 import numpy as np
 import pandas as pd
-import glob
 
 
 def cover_rate(arcEval: np.ndarray, divNum: int) -> float:
@@ -38,8 +39,8 @@ def display(pfs: list, idx: np.ndarray) -> None:
     print("Minimum is {}, No.{} ({})".format(np.min(idx), np.argmin(idx)+1, pfs[np.argmin(idx)]))
 
 
-def evaluation(targetDir: str, *indicators) -> None:
-    paretoFronts = sorted(glob.glob(targetDir + '/*.csv'))
+def evaluation(targetDir: str, *indicators: np.ndarray) -> None:
+    paretoFronts = sorted(glob.glob(targetDir + '/front_*.csv'))
     numOfSols = np.zeros(len(paretoFronts))
     cr = np.zeros(len(paretoFronts))
 

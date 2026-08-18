@@ -90,8 +90,7 @@ class TestProblemInit:
         p = Problem(d)
         assert p.K == 2
 
-    def test_abnormal_unknown_function(self, capsys):
+    def test_abnormal_unknown_function(self):
         d = {"name": "Unknown", "dimension": 2, "upper": 1.0, "lower": 0.0}
-        p = Problem(d)
-        captured = capsys.readouterr()
-        assert "ERROR" in captured.out
+        with pytest.raises(ValueError, match="Unknown function"):
+            Problem(d)

@@ -41,10 +41,24 @@ class TestArchiveUpdateArchive:
         arc = _make_arc_k2()
         original = arc.fit_gb.copy()
         arc.update_archive(
-            np.array([[0.5, 0.5]]),
-            np.array([[0.5, 0.5]])
+            np.array([[2.0, 2.0]]),
+            np.array([[2.0, 2.0]])
         )
         np.testing.assert_array_equal(arc.fit_gb, original)
+
+    def test_normal_updates_when_dominated_solution_added(self):
+        # f1=0.0, f2=1.0 のみを持つアーカイブを作成
+        pos = np.array([[0.0, 0.0]])
+        fit = np.array([[0.0, 1.0]])
+        arc = Archive(pos, fit, NA_MAX=10, D=2, K=2)
+
+        # f1=1.0, f2=0.0 を追加するとパレートフロントが更新されるはず
+        arc.update_archive(
+            np.array([[1.0, 1.0]]),
+            np.array([[1.0, 0.0]])
+        )
+        # 2点がパレートフロントに存在するはず
+        assert arc.fit_gb.shape[0] == 2
 
 
 class TestArchiveSelectLeader:

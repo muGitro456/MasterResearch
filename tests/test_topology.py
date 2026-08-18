@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from topology import Topology
 
 
@@ -36,8 +37,11 @@ class TestTopologySelectEdge:
         topo = Topology(N=25, N_SIZE=5, name="Grid")
         assert len(topo.relation) == 25
 
-    def test_abnormal_unknown_name(self, capsys):
-        topo = Topology(N=9, N_SIZE=3, name="Unknown")
-        captured = capsys.readouterr()
-        assert "ERROR" in captured.out
-        assert topo.relation == -1
+    def test_abnormal_unknown_name(self):
+        with pytest.raises(ValueError, match="Unknown topology"):
+            Topology(N=9, N_SIZE=3, name="Unknown")
+
+def test_select_edge_unknown_name_raises():
+    topo = Topology(N=5, N_SIZE=5, name="Ring_5")
+    with pytest.raises(ValueError, match="Unknown topology"):
+        topo.select_edge("UNKNOWN_TOPOLOGY")

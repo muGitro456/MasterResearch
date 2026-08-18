@@ -1,7 +1,11 @@
 from __future__ import annotations
+
+import copy
+import json
 from typing import TYPE_CHECKING
+
 import numpy as np
-import copy, json
+
 import logger as db
 
 if TYPE_CHECKING:
@@ -11,7 +15,7 @@ if TYPE_CHECKING:
 
 with open('./property/parameters.json', 'r') as f:
     param_dict = json.load(f)
-    
+
 class SubSwarm:
     # クラス変数
     W = param_dict["INERTIA"]
@@ -32,7 +36,7 @@ class SubSwarm:
             self.FIT[j] = swarm.FIT[index * N_SUB_PARTICLE + j]
             self.POS_PB[j] = swarm.POS_PB[index * N_SUB_PARTICLE + j]
             self.FIT_PB[j] = swarm.FIT_PB[index * N_SUB_PARTICLE + j]
-    
+
     def update_vel(self, gbL: np.ndarray, my_field: SearchSpace, gen: int) -> None:
         VEL_TMP = SubSwarm.W * self.VEL \
                 + SubSwarm.C1 * np.random.rand(self.N_SUB_PARTICLE, my_field.D) * (self.POS_PB - self.POS) \
@@ -43,7 +47,7 @@ class SubSwarm:
     def update_pos(self, field: SearchSpace) -> None:
         _POS_TMP = self.POS + self.VEL
         self.POS, self.VEL = field.check_boundaries(_POS_TMP, self.VEL)
-    
+
     def update_pb(self) -> None:
         for i in range(self.N_SUB_PARTICLE):
             if all(self.FIT[i] < self.FIT_PB[i]):
@@ -93,7 +97,7 @@ class Neighborhood_C:
         self.my_field.update_fit(self.POS_PB)
 
         return self.POS, self.FIT
-    
+
     def update_vel(self, gbL: np.ndarray, lb: np.ndarray, my_field: SearchSpace, gen: int) -> None:
         VEL_TMP = self.my_swarm[0].W * self.VEL \
                 + self.my_swarm[0].C1 * np.random.rand(self.N_SIZE * self.N_SUB_PARTICLE, my_field.D) * (self.POS_PB - self.POS) \

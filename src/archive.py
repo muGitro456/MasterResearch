@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Archive:
     def __init__(self, pos_swarm: np.ndarray, fit_swarm: np.ndarray, NA_MAX: int, D: int, K: int) -> None:
         self.cr = 0.0 # 被覆率
@@ -8,7 +9,7 @@ class Archive:
         self.K = K
 
         self.pos_gb, self.fit_gb = self.make_pareto_front(pos_swarm, fit_swarm)
-    
+
     def make_pareto_front(self, pos: np.ndarray, fit: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         pos_gb: np.ndarray = np.zeros((self.NA_MAX, self.D)) # アーカイブに保存されているGBestの位置
         fit_gb: np.ndarray = np.zeros((self.NA_MAX, self.K)) # アーカイブに保存されているGBestの評価値
@@ -61,8 +62,8 @@ class Archive:
     def update_archive(self, POS_current: np.ndarray, FIT_current: np.ndarray) -> None:
         tmp_pos_gb = np.vstack((self.pos_gb, POS_current))
         tmp_fit_gb = np.vstack((self.fit_gb, FIT_current))
-        self.make_pareto_front(tmp_pos_gb, tmp_fit_gb)
-    
+        self.pos_gb, self.fit_gb = self.make_pareto_front(tmp_pos_gb, tmp_fit_gb)
+
     def select_leader(self) -> np.ndarray:
         cd = self.calc_crowding_distance()
 
@@ -80,7 +81,7 @@ class Archive:
             leader = np.argwhere(cd == chosen)
             #print(type(leader))
             return self.pos_gb[leader[0,0]]  # type: ignore[no-any-return]
-    
+
     def calc_crowding_distance(self, fit_gb: np.ndarray | None = None) -> np.ndarray:
         if fit_gb is None:
             fit_gb = self.fit_gb
@@ -88,7 +89,7 @@ class Archive:
         cd = np.zeros(NA)
         indices_sorted = np.argsort(fit_gb[:,0]) # f1軸に対して昇順ソート
         fit_gb_sorted = fit_gb[indices_sorted]
-        
+
         if NA != 1:
             for k in range(self.K):
                 front_up = np.append(fit_gb_sorted[1:, k], np.inf)
@@ -104,9 +105,9 @@ class Archive:
         else:
             cd[0] = 1
         cd[-1] = cd[0]
-        #print(cd) 
+        #print(cd)
         return cd
-    
+
     def calc_cover_rate(self, divNum: int) -> float:
         if self.K == 3:
             min_f = np.array([np.min(self.fit_gb[:, 0]), np.min(self.fit_gb[:, 1]), np.min(self.fit_gb[:, 2])])
@@ -128,7 +129,7 @@ class Archive:
                     if lowLim <= self.fit_gb[r, k] and self.fit_gb[r, k] <= highLim:
                         region[k, div] = region[k, div] + 1
                         break
-            
+
             for div in range(divNum):
                 if region[k, div] != 0:
                     cover[k] = cover[k] + 1
