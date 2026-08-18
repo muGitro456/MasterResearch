@@ -13,10 +13,9 @@ from .field import Problem
 from .proposed import MASTER_A, MASTER_B, MASTER_C
 from .related import FPOMOPSO, MOPSO, SENIOR
 
-# VScodeでは文字選択→Ctrl+Shift+Pでコマンドパレット→upperと入力で大文字にできる"
-sheet_name = "../プログラム実行記録管理シート.csv"
 
-def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト') -> None:
+def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト',
+         output_dir: str = 'backLog', log_file: str = 'execution_log.csv') -> None:
     TRIAL = trial       # 試行回数
     isDebugged = False  # 粒子の動きを確認したいか
     isPlotted = True    # パレートフロントの情報を記録したいか
@@ -73,11 +72,11 @@ def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト'
         cr[t] = archive.calc_cover_rate(archive.fit_gb.shape[0])
 
         if isDebugged:  # pragma: no cover
-            logger.write4debug('p', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
-            logger.write4debug('v', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME)
+            logger.write4debug('p', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME, output_dir=output_dir)
+            logger.write4debug('v', param_dict["GENERATION_MAX"], METH_NUM, METH_NAME, output_dir=output_dir)
 
         if isPlotted:
-            log_dir = record_writer.write4plot(t + 1, (METH_NUM, FUNC_NUM), FUNC_NAME, METH_NAME, startTime)
+            log_dir = record_writer.write4plot(t + 1, (METH_NUM, FUNC_NUM), FUNC_NAME, METH_NAME, startTime, output_dir=output_dir)
 
     print("Finished!!")
     processing_time_ave = float(np.average(processing_time))
@@ -93,7 +92,7 @@ def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト'
         print(f"Trajectory saved to {log_dir}trajectory_best.csv")
     if isPlotted:
         metrics.evaluation(log_dir, numOfGBs, cr)
-    record_writer.write_record(sheet_name, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
+    record_writer.write_record(log_file, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
 
 def file_is_locked(filepath: str) -> bool:
     try:

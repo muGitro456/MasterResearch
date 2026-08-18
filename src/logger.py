@@ -36,8 +36,8 @@ def store(var: np.ndarray, target: str) -> None:
             print("該当なし")
 
 
-def write4debug(target: str, maxgen: int, m_num: str, m_name: str) -> None:
-    new_dir_path = '../backLog/' + m_num + '_' + m_name + '/'
+def write4debug(target: str, maxgen: int, m_num: str, m_name: str, output_dir: str = 'backLog') -> None:
+    new_dir_path = output_dir.rstrip('/') + '/' + m_num + '_' + m_name + '/'
     os.makedirs(new_dir_path, exist_ok=True)
 
     match target:

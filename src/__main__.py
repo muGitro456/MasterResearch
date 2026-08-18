@@ -1,14 +1,10 @@
 """python -m masterresearch のエントリポイント。"""
 import argparse
-import os
 import subprocess
 
 from .config_loader import load_yaml
-from .simulation import file_is_locked, sheet_name
+from .simulation import file_is_locked
 from .simulation import main as run_main
-
-_SRC_DIR = os.path.dirname(os.path.abspath(__file__))
-os.chdir(_SRC_DIR)  # record_writer/logger の '../backLog/' 相対パス解決のため（Phase E2 で解消予定）
 
 
 def _select_interactive() -> list[str]:
@@ -65,15 +61,17 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument('--trial', type=int, default=100, help='試行回数 (デフォルト: 100)')
     parser.add_argument('--comment', '-C', default='ただのテスト', help='実行コメント')
+    parser.add_argument('--output-dir', default='backLog', help='パレートフロント等の出力先ディレクトリ (デフォルト: backLog)')
+    parser.add_argument('--log-file', default='execution_log.csv', help='実行記録CSVのパス (デフォルト: execution_log.csv)')
     return parser.parse_args()
 
 
 def cli() -> None:
-    if file_is_locked(sheet_name):
-        print("ERROR: {} がロックされています。閉じてから実行してください".format(sheet_name))
-        return
-
     args = _parse_args()
+
+    if file_is_locked(args.log_file):
+        print("ERROR: {} がロックされています。閉じてから実行してください".format(args.log_file))
+        return
 
     if args.manual:
         instructions = args.manual
@@ -81,7 +79,8 @@ def cli() -> None:
         instructions = _select_interactive()
 
     for instruction in instructions:
-        run_main(instruction, trial=args.trial, comment=args.comment)
+        run_main(instruction, trial=args.trial, comment=args.comment,
+                  output_dir=args.output_dir, log_file=args.log_file)
 
     _notify("プログラムの実行が完了しました")
 

@@ -42,6 +42,27 @@ class TestWrite4plot:
         )
         assert isinstance(result, str)
 
+    def test_normal_default_output_dir_is_backlog(self, mocker):
+        mocker.patch('os.makedirs')
+        mocker.patch('pandas.DataFrame.to_csv')
+        s_time = datetime.datetime(2024, 1, 1, 12, 0, 0)
+        result = record_writer.write4plot(
+            trial=1, nums=('1', '1'), f_name='ZDT2',
+            m_name='MOPSO', s_time=s_time
+        )
+        assert result.startswith('backLog/')
+
+    def test_normal_custom_output_dir_is_honored(self, mocker):
+        mocker.patch('os.makedirs')
+        mocker.patch('pandas.DataFrame.to_csv')
+        s_time = datetime.datetime(2024, 1, 1, 12, 0, 0)
+        result = record_writer.write4plot(
+            trial=1, nums=('1', '1'), f_name='ZDT2',
+            m_name='MOPSO', s_time=s_time, output_dir='custom_dir'
+        )
+        assert result.startswith('custom_dir/')
+        assert 'backLog' not in result
+
 
 class TestWriteRecord:
     def test_normal_creates_file_with_header(self, mocker, tmp_path):

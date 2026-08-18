@@ -11,9 +11,10 @@ import pandas as pd
 from . import logger
 
 
-def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_time: datetime.datetime) -> str:
+def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_time: datetime.datetime,
+                output_dir: str = 'backLog') -> str:
     dir_path = (
-        '../backLog/'
+        output_dir.rstrip('/') + '/'
         + nums[0] + '_' + m_name + '/'
         + nums[1] + '_' + f_name + '/'
         + s_time.strftime('%Y%m%d_%H%M%S') + '/'

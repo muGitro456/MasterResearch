@@ -74,6 +74,32 @@ class TestMain:
         assert "N_SUBSWARM" in captured.out
         mock_class.assert_called()
 
+    def test_normal_passes_output_dir_and_log_file_through(self, mocker):
+        mock_class = self._make_mock_algo(mocker)
+        mocker.patch('src.simulation.MOPSO', mock_class)
+        mock_write4plot = mocker.patch('src.simulation.record_writer.write4plot', return_value='custom_dir/')
+        mocker.patch('src.simulation.metrics.evaluation')
+        mock_write_record = mocker.patch('src.simulation.record_writer.write_record')
+        mocker.patch('src.simulation.record_writer.write_trajectory')
+
+        simulation.main("19", output_dir='custom_dir', log_file='custom_log.csv')
+
+        assert mock_write4plot.call_args.kwargs['output_dir'] == 'custom_dir'
+        assert mock_write_record.call_args.args[0] == 'custom_log.csv'
+
+    def test_normal_default_output_dir_and_log_file(self, mocker):
+        mock_class = self._make_mock_algo(mocker)
+        mocker.patch('src.simulation.MOPSO', mock_class)
+        mock_write4plot = mocker.patch('src.simulation.record_writer.write4plot', return_value='backLog/')
+        mocker.patch('src.simulation.metrics.evaluation')
+        mock_write_record = mocker.patch('src.simulation.record_writer.write_record')
+        mocker.patch('src.simulation.record_writer.write_trajectory')
+
+        simulation.main("19")
+
+        assert mock_write4plot.call_args.kwargs['output_dir'] == 'backLog'
+        assert mock_write_record.call_args.args[0] == 'execution_log.csv'
+
 
 class TestNotify:
     def test_normal_calls_notify_send(self, mocker):
