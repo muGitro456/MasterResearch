@@ -1,7 +1,6 @@
 """PSO シミュレーションのコアロジック。"""
 # Pythonパッケージのインポート
 import datetime
-import os
 import time
 
 import numpy as np
@@ -11,12 +10,13 @@ from tqdm import tqdm
 from . import logger, metrics, record_writer
 from .config_loader import load_yaml
 from .field import Problem
+from .paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
 from .proposed import MASTER_A, MASTER_B, MASTER_C
 from .related import FPOMOPSO, MOPSO, SENIOR
 
 
 def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト',
-         output_dir: str = 'backLog', log_file: str = 'execution_log.csv') -> None:
+         output_dir: str = DEFAULT_OUTPUT_DIR, log_file: str = DEFAULT_LOG_FILE) -> None:
     TRIAL = trial       # 試行回数
     isDebugged = False  # 粒子の動きを確認したいか
     isPlotted = True    # パレートフロントの情報を記録したいか
@@ -96,12 +96,11 @@ def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト'
     record_writer.write_record(log_file, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
 
 def file_is_locked(filepath: str) -> bool:
-    dir_name = os.path.dirname(filepath)
-    if dir_name:
-        os.makedirs(dir_name, exist_ok=True)
     try:
         f = open(filepath, 'a')
         f.close()
+    except FileNotFoundError:
+        return False  # 親ディレクトリが未作成なだけ。ロックではない（作成は write_record 側の責務）
     except OSError:
         return True
     else:

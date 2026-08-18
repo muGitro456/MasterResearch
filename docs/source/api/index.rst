@@ -11,6 +11,7 @@ API リファレンス
    src.field
    src.logger
    src.metrics
+   src.paths
    src.proposed
    src.record_writer
    src.related

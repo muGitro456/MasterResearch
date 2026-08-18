@@ -9,10 +9,11 @@ import numpy as np
 import pandas as pd
 
 from . import logger
+from .paths import DEFAULT_OUTPUT_DIR
 
 
 def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_time: datetime.datetime,
-                output_dir: str = 'backLog') -> str:
+                output_dir: str = DEFAULT_OUTPUT_DIR) -> str:
     dir_path = os.path.join(
         output_dir,
         nums[0] + '_' + m_name,

@@ -3,6 +3,7 @@ import argparse
 import subprocess
 
 from .config_loader import load_yaml
+from .paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
 from .simulation import file_is_locked
 from .simulation import main as run_main
 
@@ -61,8 +62,8 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument('--trial', type=int, default=100, help='試行回数 (デフォルト: 100)')
     parser.add_argument('--comment', '-C', default='ただのテスト', help='実行コメント')
-    parser.add_argument('--output-dir', default='backLog', help='パレートフロント等の出力先ディレクトリ (デフォルト: backLog)')
-    parser.add_argument('--log-file', default='execution_log.csv', help='実行記録CSVのパス (デフォルト: execution_log.csv)')
+    parser.add_argument('--output-dir', default=DEFAULT_OUTPUT_DIR, help=f'パレートフロント等の出力先ディレクトリ (デフォルト: {DEFAULT_OUTPUT_DIR})')
+    parser.add_argument('--log-file', default=DEFAULT_LOG_FILE, help=f'実行記録CSVのパス (デフォルト: {DEFAULT_LOG_FILE})')
     return parser.parse_args()
 
 

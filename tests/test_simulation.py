@@ -12,11 +12,13 @@ class TestFileIsLocked:
         mocker.patch('builtins.open', side_effect=OSError("locked"))
         assert simulation.file_is_locked('dummy.csv') is True
 
-    def test_normal_creates_missing_parent_directory(self, tmp_path):
-        """A non-existent parent dir must not be reported as 'locked'."""
+    def test_normal_missing_parent_directory_is_not_locked(self, tmp_path):
+        """A non-existent parent dir is not a lock — file_is_locked is a pure
+        check and must not create directories as a side effect (that is
+        write_record's job, at the point it actually writes)."""
         target = tmp_path / "nested" / "dir" / "log.csv"
         assert simulation.file_is_locked(str(target)) is False
-        assert target.parent.is_dir()
+        assert not target.parent.exists()
 
     def test_normal_bare_filename_without_directory(self, tmp_path, monkeypatch):
         """A bare filename (no directory component) must still work."""
