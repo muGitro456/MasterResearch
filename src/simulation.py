@@ -103,15 +103,3 @@ def file_is_locked(filepath: str) -> bool:
         return True
     else:
         return False
-
-if __name__ == "__main__":  # pragma: no cover
-    if not file_is_locked(sheet_name):
-        instruction_set = ["691"]
-        #instruction_set = ["27", "37", "47", "572", "573", "574", "575"]
-        #instruction_set = ["515", "525", "535", "545", "555", "565"]
-        #instruction_set = ["41", "42", "43", "44", "45", "46"]
-
-        for instruction in instruction_set:
-            main(instruction)
-    else:
-        print("ERROR: {} がロックされています。閉じてから実行してください".format(sheet_name))
