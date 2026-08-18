@@ -1,3 +1,4 @@
+"""提案手法 C（MASTER_C）で使用する近傍サブ粒子群の定義。"""
 from __future__ import annotations
 
 import copy
