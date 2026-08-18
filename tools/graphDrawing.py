@@ -1,8 +1,9 @@
 """パレートフロントの世代変化をアニメーションで可視化するツール。"""
 import sys
-import pandas as pd
-import matplotlib.pyplot as plt
+
 import matplotlib.animation as animation
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def animate_trajectory(csv_path: str, interval: int = 200) -> None:
@@ -33,7 +34,8 @@ def animate_trajectory(csv_path: str, interval: int = 200) -> None:
         gen_text.set_text(f'Generation: {gen}')
         return scat, gen_text
 
-    ani = animation.FuncAnimation(
+    # FuncAnimation への参照を保持しないと plt.show() の前に GC されアニメーションが動かない
+    ani = animation.FuncAnimation(  # noqa: F841
         fig, update, frames=len(generations),
         interval=interval, blit=True, repeat=False
     )
