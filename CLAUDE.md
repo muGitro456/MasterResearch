@@ -37,7 +37,7 @@
 9. 問題なければpull requestを承認して、mainブランチに変更を取り込む
 
 # ディレクトリ構成
-- `src/`: アルゴリズムのコアロジック（main.pyから実行）
+- `src/`: アルゴリズムのコアロジック（`masterresearch` CLI または `python -m src` から実行。直接 `python simulation.py` では動作しない）
 - `tools/`: 単独で実行するスクリプト（他モジュールからimportされない）
 - `tests/`: pytest テストスイート
 

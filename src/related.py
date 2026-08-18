@@ -4,10 +4,10 @@ from typing import Any
 
 from tqdm import tqdm
 
-import logger as db
-from agent import Predators, PredatorsSenior, Swarm
-from archive import Archive
-from field import Problem, SearchSpace
+from . import logger as db
+from .agent import Predators, PredatorsSenior, Swarm
+from .archive import Archive
+from .field import Problem, SearchSpace
 
 
 class MOPSO:

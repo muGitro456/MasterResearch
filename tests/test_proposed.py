@@ -1,7 +1,7 @@
 import numpy as np
-from field import Problem
-from archive import Archive
-from proposed import MASTER_A, MASTER_B, MASTER_C
+from src.field import Problem
+from src.archive import Archive
+from src.proposed import MASTER_A, MASTER_B, MASTER_C
 
 
 class TestMASTERASimulation:

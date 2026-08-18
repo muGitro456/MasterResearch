@@ -1,5 +1,5 @@
 import numpy as np
-from archive import Archive
+from src.archive import Archive
 
 
 def _make_arc_k2(na_max=10):

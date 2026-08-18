@@ -2,19 +2,18 @@
 from __future__ import annotations
 
 import copy
-import json
 from typing import TYPE_CHECKING
 
 import numpy as np
 
-import logger as db
+from . import logger as db
+from .config_loader import load_yaml
 
 if TYPE_CHECKING:
-    from field import SearchSpace
-    from topology import Topology
+    from .field import SearchSpace
+    from .topology import Topology
 
-with open('./property/parameters.json', 'r') as f:
-    param_dict = json.load(f)
+param_dict = load_yaml('parameters.yaml')
 
 class Swarm:
     # クラス変数

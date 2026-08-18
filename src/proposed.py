@@ -4,13 +4,13 @@ from typing import Any
 import numpy as np
 from tqdm import tqdm
 
-import logger as db
-from agent import Neighborhood, PredatorsSenior
-from agent_subs import Neighborhood_C, SubSwarm
-from archive import Archive
-from field import Problem
-from related import MOPSO
-from topology import Topology
+from . import logger as db
+from .agent import Neighborhood, PredatorsSenior
+from .agent_subs import Neighborhood_C, SubSwarm
+from .archive import Archive
+from .field import Problem
+from .related import MOPSO
+from .topology import Topology
 
 
 class MASTER_A(MOPSO):

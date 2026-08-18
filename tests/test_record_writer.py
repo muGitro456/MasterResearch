@@ -1,7 +1,7 @@
 import datetime
 import numpy as np
-import logger
-import record_writer
+from src import logger
+from src import record_writer
 
 
 class TestWrite4plot:
@@ -100,7 +100,7 @@ class TestWriteTrajectory:
         logger.reset_log()
 
     def test_normal_creates_csv(self, tmp_path, mocker):
-        mocker.patch('record_writer.logger.LOG_TRAJ', [
+        mocker.patch('src.record_writer.logger.LOG_TRAJ', [
             np.array([[0.1, 0.9], [0.5, 0.5]]),
             np.array([[0.08, 0.92]]),
         ])

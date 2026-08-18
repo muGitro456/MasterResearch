@@ -1,7 +1,7 @@
 src.topology
 ============
 
-.. automodule:: topology
+.. automodule:: src.topology
    :members:
    :undoc-members:
    :show-inheritance:

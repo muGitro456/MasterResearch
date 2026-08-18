@@ -1,7 +1,6 @@
 import runpy
 import sys
 import numpy as np
-import metrics
 
 
 class TestDatabaseCLI:

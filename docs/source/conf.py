@@ -3,12 +3,11 @@ import os
 import sys
 
 _here = os.path.dirname(os.path.abspath(__file__))
-_src_dir = os.path.normpath(os.path.join(_here, '../../src'))
+_project_root = os.path.normpath(os.path.join(_here, '../..'))
 _tools_dir = os.path.normpath(os.path.join(_here, '../../tools'))
 
-sys.path.insert(0, _src_dir)
+sys.path.insert(0, _project_root)
 sys.path.insert(0, _tools_dir)
-os.chdir(_src_dir)  # agent.py 等が ./property/*.json を開くため
 
 project = 'MasterResearch'
 copyright = '2026, muGitro456'
@@ -24,7 +23,3 @@ extensions = [
 html_theme = 'furo'
 autodoc_member_order = 'bysource'
 exclude_patterns = ['_build']
-
-
-def setup(app: object) -> None:
-    os.chdir(_src_dir)

@@ -12,24 +12,12 @@ _MOCK_FUNCTIONS = {'9': {'name': 'ZDT2'}}
 _MOCK_TOPOLOGIES = {'0': {'name': 'なし'}, '1': {'name': 'Ring'}}
 
 
-class TestLoadJson:
-    def test_returns_dict(self):
-        result = entry._load_json('methods.json')
-        assert isinstance(result, dict)
-        assert len(result) > 0
-
-    def test_has_name_field(self):
-        result = entry._load_json('methods.json')
-        for v in result.values():
-            assert 'name' in v
-
-
 class TestSelectInteractive:
     def _patch_load(self, mocker):
-        mocker.patch.object(entry, '_load_json', side_effect=lambda name: {
-            'methods.json': _MOCK_METHODS,
-            'functions.json': _MOCK_FUNCTIONS,
-            'topologies.json': _MOCK_TOPOLOGIES,
+        mocker.patch.object(entry, 'load_yaml', side_effect=lambda name: {
+            'methods.yaml': _MOCK_METHODS,
+            'functions.yaml': _MOCK_FUNCTIONS,
+            'topologies.yaml': _MOCK_TOPOLOGIES,
         }[name])
 
     def test_non_master_method_returns_two_digit_instruction(self, mocker):

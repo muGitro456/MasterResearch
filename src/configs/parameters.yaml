@@ -1,0 +1,17 @@
+# PSO / FPO アルゴリズムのパラメータ設定。
+# 意味の詳細は README.md の「パラメータ」表も参照。
+N: 100                          # 粒子数
+N_SUB_SWARM: 50                 # サブ群数 (MASTER_C用)
+N_ARCHIVE_MAX: 150              # アーカイブ最大サイズ
+GENERATION_MAX: 200              # 最大世代数
+INERTIA: 0.9                    # 慣性係数 W
+INERTIA_INITIAL: 0.9
+INERTIA_END: 0.4
+SELF_AWARENESS: 2.0             # 自己最良係数 C1
+SOCIAL_AWARENESS: 2.0           # 社会的係数 C2
+RIVAL_AWARENESS: 2.0            # 競合相手係数 C3 (FPO)
+SELF_AWARENESS_OF_PREDATOR: 2.0
+LOCAL_AWARENESS: 2.0            # 近傍最良係数 C5
+DAMP: 1.0
+VMAX_INITIAL: 2
+VMAX_END: 5

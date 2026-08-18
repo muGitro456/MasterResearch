@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from topology import Topology
+from src.topology import Topology
 
 
 class TestTopologySelectEdge:

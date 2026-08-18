@@ -2,22 +2,22 @@ import os
 import sys
 import pytest
 
+_PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 _SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
 _TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tools'))
 
+sys.path.insert(0, _PROJECT_ROOT)
 sys.path.insert(0, _SRC_DIR)
 sys.path.insert(0, _TOOLS_DIR)
 
 
-def pytest_configure(config):
-    # monkeypatch.chdir alone is insufficient: agent.py/agent_subs.py open
-    # ./property/parameters.json at class-scope import time (collection phase).
-    os.chdir(_SRC_DIR)
-
-
 @pytest.fixture(autouse=True)
 def change_to_src_dir(monkeypatch):
-    """Ensure each test runs with CWD set to src directory."""
+    """Ensure each test runs with CWD set to src directory.
+
+    record_writer.py / logger.py が '../backLog/' のような CWD 相対パスに
+    依存しているため、この chdir は Phase E2 で解消するまで残す。
+    """
     monkeypatch.chdir(_SRC_DIR)
 
 

@@ -8,7 +8,7 @@ import os
 import numpy as np
 import pandas as pd
 
-import logger
+from . import logger
 
 
 def write4plot(trial: int, nums: tuple[str, str], f_name: str, m_name: str, s_time: datetime.datetime) -> str:

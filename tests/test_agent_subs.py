@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
-from field import SearchSpace, Problem
-from agent import Swarm
-from agent_subs import SubSwarm, Neighborhood_C
-from topology import Topology
+from src.field import SearchSpace, Problem
+from src.agent import Swarm
+from src.agent_subs import SubSwarm, Neighborhood_C
+from src.topology import Topology
 
 
 @pytest.fixture
