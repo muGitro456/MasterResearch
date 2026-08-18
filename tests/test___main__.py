@@ -79,6 +79,40 @@ class TestParseArgs:
         assert args.trial == 1
         assert args.comment == 'CLIテスト'
 
+    def test_output_dir_and_log_file_defaults(self, mocker):
+        mocker.patch('sys.argv', ['masterresearch'])
+        args = entry._parse_args()
+        assert args.output_dir == 'backLog'
+        assert args.log_file == 'execution_log.csv'
+
+    def test_output_dir_and_log_file_custom(self, mocker):
+        mocker.patch('sys.argv', [
+            'masterresearch', '--output-dir', 'my_results', '--log-file', 'my_log.csv'
+        ])
+        args = entry._parse_args()
+        assert args.output_dir == 'my_results'
+        assert args.log_file == 'my_log.csv'
+
+    def test_empty_output_dir_is_rejected(self, mocker, capsys):
+        mocker.patch('sys.argv', ['masterresearch', '--output-dir', ''])
+        try:
+            entry._parse_args()
+            assert False, "expected SystemExit"
+        except SystemExit:
+            pass
+        captured = capsys.readouterr()
+        assert "空文字列" in captured.err
+
+    def test_empty_log_file_is_rejected(self, mocker, capsys):
+        mocker.patch('sys.argv', ['masterresearch', '--log-file', ''])
+        try:
+            entry._parse_args()
+            assert False, "expected SystemExit"
+        except SystemExit:
+            pass
+        captured = capsys.readouterr()
+        assert "空文字列" in captured.err
+
 
 class TestCli:
     def test_manual_mode_dispatches_run_main(self, mocker):
@@ -89,7 +123,7 @@ class TestCli:
         mock_notify = mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', ['masterresearch', '--manual', '691', '--trial', '1', '--comment', 'test'])
         entry.cli()
-        mock_run.assert_called_once_with('691', trial=1, comment='test')
+        mock_run.assert_called_once_with('691', trial=1, comment='test', output_dir='backLog', log_file='execution_log.csv')
         mock_notify.assert_called_once()
 
     def test_manual_mode_multiple_codes(self, mocker):
@@ -112,7 +146,7 @@ class TestCli:
         mocker.patch('sys.argv', ['masterresearch'])
         entry.cli()
         mock_select.assert_called_once()
-        mock_run.assert_called_once_with('691', trial=100, comment='ただのテスト')
+        mock_run.assert_called_once_with('691', trial=100, comment='ただのテスト', output_dir='backLog', log_file='execution_log.csv')
 
     def test_notify_called_after_all_runs(self, mocker):
         """_notify fires exactly once, after all instructions complete"""
@@ -123,6 +157,27 @@ class TestCli:
         mocker.patch('sys.argv', ['masterresearch', '--manual', '27', '37'])
         entry.cli()
         mock_notify.assert_called_once_with('プログラムの実行が完了しました')
+
+    def test_custom_output_dir_and_log_file_passed_to_run_main(self, mocker):
+        """--output-dir/--log-file are forwarded to run_main"""
+        import src.__main__ as entry
+        mocker.patch.object(entry, 'file_is_locked', return_value=False)
+        mock_run = mocker.patch.object(entry, 'run_main')
+        mocker.patch.object(entry, '_notify')
+        mocker.patch('sys.argv', [
+            'masterresearch', '--manual', '691', '--output-dir', 'my_results', '--log-file', 'my_log.csv'
+        ])
+        entry.cli()
+        mock_run.assert_called_once_with('691', trial=100, comment='ただのテスト', output_dir='my_results', log_file='my_log.csv')
+
+    def test_locked_file_uses_custom_log_file_path(self, mocker, capsys):
+        """file_is_locked is checked against --log-file, not a hardcoded default"""
+        import src.__main__ as entry
+        mocker.patch.object(entry, 'file_is_locked', return_value=True)
+        mocker.patch('sys.argv', ['masterresearch', '--manual', '691', '--log-file', 'my_log.csv'])
+        entry.cli()
+        captured = capsys.readouterr()
+        assert "my_log.csv" in captured.out
 
     def test_locked_file_aborts_without_running(self, mocker, capsys):
         """When the record CSV is locked, cli() prints an error and never runs or notifies"""

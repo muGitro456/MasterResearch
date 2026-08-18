@@ -42,6 +42,27 @@ class TestWrite4plot:
         )
         assert isinstance(result, str)
 
+    def test_normal_default_output_dir_is_backlog(self, mocker):
+        mocker.patch('os.makedirs')
+        mocker.patch('pandas.DataFrame.to_csv')
+        s_time = datetime.datetime(2024, 1, 1, 12, 0, 0)
+        result = record_writer.write4plot(
+            trial=1, nums=('1', '1'), f_name='ZDT2',
+            m_name='MOPSO', s_time=s_time
+        )
+        assert result.startswith('backLog/')
+
+    def test_normal_custom_output_dir_is_honored(self, mocker):
+        mocker.patch('os.makedirs')
+        mocker.patch('pandas.DataFrame.to_csv')
+        s_time = datetime.datetime(2024, 1, 1, 12, 0, 0)
+        result = record_writer.write4plot(
+            trial=1, nums=('1', '1'), f_name='ZDT2',
+            m_name='MOPSO', s_time=s_time, output_dir='custom_dir'
+        )
+        assert result.startswith('custom_dir/')
+        assert 'backLog' not in result
+
 
 class TestWriteRecord:
     def test_normal_creates_file_with_header(self, mocker, tmp_path):
@@ -74,6 +95,19 @@ class TestWriteRecord:
         import pandas as pd
         df = pd.read_csv(csv_path)
         assert len(df) == 2
+
+    def test_normal_creates_missing_parent_directory(self, tmp_path):
+        csv_path = str(tmp_path / 'nested' / 'dir' / 'record.csv')
+        record_writer.write_record(
+            csv_path, 1,
+            datetime.datetime(2024, 1, 1, 12, 0, 0),
+            ('ZDT2', 'MOPSO', 'None'),
+            'test', 1.0, 0,
+            np.array([0.5]),
+        )
+        import pandas as pd
+        df = pd.read_csv(csv_path)
+        assert len(df) == 1
 
     def test_normal_writes_indicator_stats(self, tmp_path):
         csv_path = str(tmp_path / 'record.csv')

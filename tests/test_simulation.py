@@ -8,9 +8,38 @@ class TestFileIsLocked:
         f.write_bytes(b"")
         assert simulation.file_is_locked(str(f)) is False
 
-    def test_normal_file_is_locked(self, mocker):
+    def test_normal_file_is_locked(self, mocker, tmp_path):
+        f = tmp_path / "dummy.csv"
+        f.write_bytes(b"")
         mocker.patch('builtins.open', side_effect=OSError("locked"))
-        assert simulation.file_is_locked('dummy.csv') is True
+        assert simulation.file_is_locked(str(f)) is True
+
+    def test_normal_missing_parent_directory_is_not_locked(self, tmp_path):
+        """A non-existent parent dir is not a lock — file_is_locked is a pure
+        check and must not create directories as a side effect (that is
+        write_record's job, at the point it actually writes)."""
+        target = tmp_path / "nested" / "dir" / "log.csv"
+        assert simulation.file_is_locked(str(target)) is False
+        assert not target.parent.exists()
+
+    def test_normal_does_not_create_file_as_side_effect(self, tmp_path):
+        """Checking a not-yet-existing path must not create it — file_is_locked
+        is a pure check; write_record is responsible for actually creating
+        the file when it writes."""
+        target = tmp_path / "log.csv"
+        assert simulation.file_is_locked(str(target)) is False
+        assert not target.exists()
+
+    def test_normal_empty_path_is_not_locked(self):
+        """An empty path doesn't exist, so it's reported as not locked — the
+        empty-string case itself is rejected earlier, at CLI argument
+        parsing (see tests/test___main__.py)."""
+        assert simulation.file_is_locked('') is False
+
+    def test_normal_bare_filename_without_directory(self, tmp_path, monkeypatch):
+        """A bare filename (no directory component) must still work."""
+        monkeypatch.chdir(tmp_path)
+        assert simulation.file_is_locked('log.csv') is False
 
 
 
@@ -73,6 +102,32 @@ class TestMain:
         captured = capsys.readouterr()
         assert "N_SUBSWARM" in captured.out
         mock_class.assert_called()
+
+    def test_normal_passes_output_dir_and_log_file_through(self, mocker):
+        mock_class = self._make_mock_algo(mocker)
+        mocker.patch('src.simulation.MOPSO', mock_class)
+        mock_write4plot = mocker.patch('src.simulation.record_writer.write4plot', return_value='custom_dir/')
+        mocker.patch('src.simulation.metrics.evaluation')
+        mock_write_record = mocker.patch('src.simulation.record_writer.write_record')
+        mocker.patch('src.simulation.record_writer.write_trajectory')
+
+        simulation.main("19", output_dir='custom_dir', log_file='custom_log.csv')
+
+        assert mock_write4plot.call_args.kwargs['output_dir'] == 'custom_dir'
+        assert mock_write_record.call_args.args[0] == 'custom_log.csv'
+
+    def test_normal_default_output_dir_and_log_file(self, mocker):
+        mock_class = self._make_mock_algo(mocker)
+        mocker.patch('src.simulation.MOPSO', mock_class)
+        mock_write4plot = mocker.patch('src.simulation.record_writer.write4plot', return_value='backLog/')
+        mocker.patch('src.simulation.metrics.evaluation')
+        mock_write_record = mocker.patch('src.simulation.record_writer.write_record')
+        mocker.patch('src.simulation.record_writer.write_trajectory')
+
+        simulation.main("19")
+
+        assert mock_write4plot.call_args.kwargs['output_dir'] == 'backLog'
+        assert mock_write_record.call_args.args[0] == 'execution_log.csv'
 
 
 class TestNotify:

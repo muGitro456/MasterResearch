@@ -61,6 +61,13 @@ class TestLoggerWrite4debug:
         captured = capsys.readouterr()
         assert "Error : logger" in captured.out
 
+    def test_normal_custom_output_dir_is_honored(self, mocker):
+        mock_makedirs = mocker.patch('os.makedirs')
+        mocker.patch('pandas.DataFrame.to_csv')
+        logger.LOG_POS.append(np.ones((3, 2)))
+        logger.write4debug('p', maxgen=1, m_num='1', m_name='TEST', output_dir='custom_dir')
+        mock_makedirs.assert_called_once_with('custom_dir/1_TEST/', exist_ok=True)
+
 
 class TestStoreTrajAndReset:
     def setup_method(self):

@@ -7,6 +7,8 @@ import os
 import numpy as np
 import pandas as pd
 
+from .paths import DEFAULT_OUTPUT_DIR
+
 LOG_POS: list = []
 LOG_VEL: list = []
 LOG_FIT: list = []
@@ -36,8 +38,8 @@ def store(var: np.ndarray, target: str) -> None:
             print("該当なし")
 
 
-def write4debug(target: str, maxgen: int, m_num: str, m_name: str) -> None:
-    new_dir_path = '../backLog/' + m_num + '_' + m_name + '/'
+def write4debug(target: str, maxgen: int, m_num: str, m_name: str, output_dir: str = DEFAULT_OUTPUT_DIR) -> None:
+    new_dir_path = os.path.join(output_dir, m_num + '_' + m_name) + '/'
     os.makedirs(new_dir_path, exist_ok=True)
 
     match target:

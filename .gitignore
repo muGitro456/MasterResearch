@@ -172,7 +172,7 @@ cython_debug/
 
 # Etc
 backLog/
-プログラム実行記録管理シート.csv
+execution_log.csv
 
 # git worktrees (isolated feature-branch workspaces)
 .worktrees/
