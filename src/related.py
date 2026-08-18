@@ -1,3 +1,4 @@
+"""関連手法（MOPSO / FPOMOPSO / SENIOR）の実装。"""
 # Pythonでは、一つのファイルには一クラス!という哲学はない.
 from typing import Any
 

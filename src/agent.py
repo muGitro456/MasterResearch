@@ -1,3 +1,4 @@
+"""粒子群最適化（PSO）の基底エージェントクラス。"""
 from __future__ import annotations
 
 import copy

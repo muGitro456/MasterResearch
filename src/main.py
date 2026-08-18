@@ -1,3 +1,4 @@
+"""PSO シミュレーションのコアロジック。"""
 # Pythonパッケージのインポート
 import datetime
 import json

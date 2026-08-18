@@ -1,3 +1,4 @@
+"""ベンチマーク関数（ZDT / DTLZ 系）と探索空間の定義。"""
 import copy
 from typing import Any, Callable
 

@@ -1,3 +1,4 @@
+"""提案手法（MASTER_A / MASTER_B / MASTER_C）の実装。"""
 from typing import Any
 
 import numpy as np
