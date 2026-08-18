@@ -1,6 +1,7 @@
 """PSO シミュレーションのコアロジック。"""
 # Pythonパッケージのインポート
 import datetime
+import os
 import time
 
 import numpy as np
@@ -96,11 +97,12 @@ def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト'
     record_writer.write_record(log_file, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
 
 def file_is_locked(filepath: str) -> bool:
+    if not os.path.exists(filepath):
+        return False  # まだ存在しない（≒ 親ディレクトリ未作成）。ロックではない。
+                       # open(filepath, 'a') は未存在ファイルを作成してしまうため、ここで弾いて副作用を避ける
     try:
         f = open(filepath, 'a')
         f.close()
-    except FileNotFoundError:
-        return False  # 親ディレクトリが未作成なだけ。ロックではない（作成は write_record 側の責務）
     except OSError:
         return True
     else:

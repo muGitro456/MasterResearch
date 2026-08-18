@@ -52,6 +52,12 @@ def _notify(message: str) -> None:
         print(f"[通知] {message}")  # notify-send が使えない環境はターミナルに出力
 
 
+def _non_empty_path(value: str) -> str:
+    if not value.strip():
+        raise argparse.ArgumentTypeError('空文字列は指定できません')
+    return value
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description='MasterResearch PSO最適化シミュレーター'
@@ -62,8 +68,10 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument('--trial', type=int, default=100, help='試行回数 (デフォルト: 100)')
     parser.add_argument('--comment', '-C', default='ただのテスト', help='実行コメント')
-    parser.add_argument('--output-dir', default=DEFAULT_OUTPUT_DIR, help=f'パレートフロント等の出力先ディレクトリ (デフォルト: {DEFAULT_OUTPUT_DIR})')
-    parser.add_argument('--log-file', default=DEFAULT_LOG_FILE, help=f'実行記録CSVのパス (デフォルト: {DEFAULT_LOG_FILE})')
+    parser.add_argument('--output-dir', type=_non_empty_path, default=DEFAULT_OUTPUT_DIR,
+                         help=f'パレートフロント等の出力先ディレクトリ (デフォルト: {DEFAULT_OUTPUT_DIR})')
+    parser.add_argument('--log-file', type=_non_empty_path, default=DEFAULT_LOG_FILE,
+                         help=f'実行記録CSVのパス (デフォルト: {DEFAULT_LOG_FILE})')
     return parser.parse_args()
 
 

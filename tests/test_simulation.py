@@ -8,9 +8,11 @@ class TestFileIsLocked:
         f.write_bytes(b"")
         assert simulation.file_is_locked(str(f)) is False
 
-    def test_normal_file_is_locked(self, mocker):
+    def test_normal_file_is_locked(self, mocker, tmp_path):
+        f = tmp_path / "dummy.csv"
+        f.write_bytes(b"")
         mocker.patch('builtins.open', side_effect=OSError("locked"))
-        assert simulation.file_is_locked('dummy.csv') is True
+        assert simulation.file_is_locked(str(f)) is True
 
     def test_normal_missing_parent_directory_is_not_locked(self, tmp_path):
         """A non-existent parent dir is not a lock — file_is_locked is a pure
@@ -19,6 +21,20 @@ class TestFileIsLocked:
         target = tmp_path / "nested" / "dir" / "log.csv"
         assert simulation.file_is_locked(str(target)) is False
         assert not target.parent.exists()
+
+    def test_normal_does_not_create_file_as_side_effect(self, tmp_path):
+        """Checking a not-yet-existing path must not create it — file_is_locked
+        is a pure check; write_record is responsible for actually creating
+        the file when it writes."""
+        target = tmp_path / "log.csv"
+        assert simulation.file_is_locked(str(target)) is False
+        assert not target.exists()
+
+    def test_normal_empty_path_is_not_locked(self):
+        """An empty path doesn't exist, so it's reported as not locked — the
+        empty-string case itself is rejected earlier, at CLI argument
+        parsing (see tests/test___main__.py)."""
+        assert simulation.file_is_locked('') is False
 
     def test_normal_bare_filename_without_directory(self, tmp_path, monkeypatch):
         """A bare filename (no directory component) must still work."""

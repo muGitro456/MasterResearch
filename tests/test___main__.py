@@ -93,6 +93,26 @@ class TestParseArgs:
         assert args.output_dir == 'my_results'
         assert args.log_file == 'my_log.csv'
 
+    def test_empty_output_dir_is_rejected(self, mocker, capsys):
+        mocker.patch('sys.argv', ['masterresearch', '--output-dir', ''])
+        try:
+            entry._parse_args()
+            assert False, "expected SystemExit"
+        except SystemExit:
+            pass
+        captured = capsys.readouterr()
+        assert "空文字列" in captured.err
+
+    def test_empty_log_file_is_rejected(self, mocker, capsys):
+        mocker.patch('sys.argv', ['masterresearch', '--log-file', ''])
+        try:
+            entry._parse_args()
+            assert False, "expected SystemExit"
+        except SystemExit:
+            pass
+        captured = capsys.readouterr()
+        assert "空文字列" in captured.err
+
 
 class TestCli:
     def test_manual_mode_dispatches_run_main(self, mocker):
