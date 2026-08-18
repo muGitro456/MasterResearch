@@ -4,6 +4,7 @@ import os
 import subprocess
 
 from .config_loader import load_yaml
+from .simulation import file_is_locked, sheet_name
 from .simulation import main as run_main
 
 _SRC_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -68,6 +69,10 @@ def _parse_args() -> argparse.Namespace:
 
 
 def cli() -> None:
+    if file_is_locked(sheet_name):
+        print("ERROR: {} がロックされています。閉じてから実行してください".format(sheet_name))
+        return
+
     args = _parse_args()
 
     if args.manual:
