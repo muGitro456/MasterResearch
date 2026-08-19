@@ -28,7 +28,7 @@ MasterResearch/
 │       └── topologies.json  # トポロジーの設定
 └── tools/                   # 単独実行スクリプト
     ├── database.py          # メトリクス計算ツール (CLI)
-    └── graphDrawing.py      # グラフ描画ツール
+    └── graph_drawer.py      # グラフ描画ツール
 ```
 
 ---

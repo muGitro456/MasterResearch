@@ -18,4 +18,4 @@ API リファレンス
    src.simulation
    src.topology
    tools.database
-   tools.graphDrawing
+   tools.graph_drawer
