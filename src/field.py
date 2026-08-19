@@ -37,7 +37,6 @@ class SearchSpace:
 
     def speedmeter(self, VEL: np.ndarray, gen: int) -> np.ndarray:
         vmax = self.VMAX(gen)
-        #print("In speedmeter VEL.shape = ",VEL.shape)
         for vel in VEL:
             vel[vel > vmax] = vmax[vel > vmax]
             vel[vel < -vmax] = -vmax[vel < -vmax]
@@ -112,14 +111,12 @@ class Problem:
                 A = lambda x : -0.2 * np.sqrt((1.0 / dimension) * np.sum(x[:, 1:] ** 2, axis = 1))  # noqa: E731
                 B = lambda x : (1.0 / dimension) * np.sum(np.cos(2 * np.pi * x[:, 1:]), axis=1)  # noqa: E731
                 F = lambda x : 20 - 20 * np.exp(A(x)) + np.e - np.exp(B(x))  # noqa: E731
-                #upper = np.array([32.768 for d in range(dimension)])
 
             case "Griewank":
                 A = lambda x : (1.0 / 4000.0) * np.sum(x[:, 1:] ** 2, axis = 1)  # noqa: E731
                 w = np.array([1.0 / np.sqrt(k + 1) for k in range(dimension)])
                 B = lambda x : - np.prod(np.cos(x[:, 1:] * w), axis=1)  # noqa: E731
                 F = lambda x : 1 + A(x) + B(x)  # noqa: E731
-                #upper = np.array([600.0 for d in range(dimension)])
 
             case "Sphere":
                 F = lambda x : np.sum(x[:, 1:]**2, axis=1)  # noqa: E731

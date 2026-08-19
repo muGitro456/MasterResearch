@@ -55,9 +55,6 @@ class MASTER_A(MOPSO):
             leader = self.arc_MOPSO.select_leader()
             for i in range(self.N):
                 # サブアーカイブの統合
-                #POS_TEMP, FIT_TEMP = self.union_neighbors(self.sub_arc_MOPSO, i, self.my_topology)
-                #union_sub_arc_MOPSO  = Archive(POS_TEMP, FIT_TEMP, self.NA_MAX, self.field.D, self.field.K)
-                #LBEST = union_sub_arc_MOPSO.select_leader()
                 lbest = self.sub_arc_MOPSO[i].select_leader()
                 POS, FIT = self.neighbors[i].explore(g+1, leader, lbest)
 
@@ -152,7 +149,6 @@ class MASTER_C(MOPSO):
 
                 sub_arcs = Archive(sub_arcs_pos, sub_arcs_fit, self.NA_MAX, self.field.D, self.field.K)
                 lbest = sub_arcs.select_leader()
-                #lbest = self.sub_arc_MOPSO[i].select_leader() # 近傍サブアーカイブからリーダーを選択するか要検討
                 POS, FIT = self.neighbors_C[i].explore(g+1, leader, lbest)
 
                 # MOPSOアーカイブの更新

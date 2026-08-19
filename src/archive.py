@@ -34,7 +34,6 @@ class Archive:
                         fit_gb = np.vstack((fit_gb, fit_sorted[r]))
                     NA += 1
         else:
-            #print("Now is K = 3 in archive.py")
             NA = 0
             for r in range(fit.shape[0]):
                 others = [j for j in range(fit.shape[0]) if j != r]
@@ -69,10 +68,8 @@ class Archive:
         cd = self.calc_crowding_distance()
 
         if len(cd) == 1:
-            #print("アーカイブ内の解が1個")
             return self.pos_gb[0]  # type: ignore[no-any-return]
         elif len(cd) == 2:
-            #print("アーカイブ内の解が2個")
             selected = self.pos_gb[0] if np.random.rand() > 0.5 else self.pos_gb[1]
             return selected  # type: ignore[no-any-return]
         else:
@@ -80,7 +77,6 @@ class Archive:
             p_weights = np.array([weights[j] / np.sum(weights) for j in range(len(weights))])
             chosen = np.random.choice(weights, size=1, p=p_weights)
             leader = np.argwhere(cd == chosen)
-            #print(type(leader))
             return self.pos_gb[leader[0,0]]  # type: ignore[no-any-return]
 
     def calc_crowding_distance(self, fit_gb: np.ndarray | None = None) -> np.ndarray:
@@ -94,11 +90,8 @@ class Archive:
         if NA != 1:
             for k in range(self.K):
                 front_up = np.append(fit_gb_sorted[1:, k], np.inf)
-                #print(front_up)
                 front_down = np.append(np.inf, fit_gb_sorted[:-1, k])
-                #print(front_down)
-                cd = cd + np.abs(front_up - front_down) #/ (np.max(fit_gb_sorted[:, k]) - np.min(fit_gb_sorted[:, k])) # 2022/10/28追加　下駄をはかせる 11/6 下駄やめた
-        #cd = cd / K # 目的関数の個数で割る
+                cd = cd + np.abs(front_up - front_down)
         if NA > 3:
             cd[0] = np.max(cd[1:-2])
         elif NA > 2:
@@ -106,7 +99,6 @@ class Archive:
         else:
             cd[0] = 1
         cd[-1] = cd[0]
-        #print(cd)
         return cd
 
     def calc_cover_rate(self, divNum: int) -> float:

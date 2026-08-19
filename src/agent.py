@@ -49,7 +49,6 @@ class Swarm:
         VEL_TMP = Swarm.W * self.VEL \
                 + Swarm.C1 * np.random.rand(self.N, my_field.D) * (self.POS_PB - self.POS) \
                 + Swarm.C2 * np.random.rand(self.N, my_field.D) * (gbL - self.POS)
-        #print("In update_vel _VEL_TMP.shape = ",_VEL_TMP.shape)
         self.VEL = my_field.speedmeter(VEL_TMP, gen)
 
     def update_pos(self, field: SearchSpace) -> None:

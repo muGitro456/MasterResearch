@@ -66,7 +66,6 @@ class Neighborhood_C:
         self.my_swarm = sub_swarms
         self.index = index
 
-        #print("self.N_SIZE = ", self.N_SIZE)
         self.POS = np.empty((self.N_SIZE * self.N_SUB_PARTICLE, field.D))
         self.VEL = np.empty((self.N_SIZE * self.N_SUB_PARTICLE, field.D))
         self.FIT = np.empty((self.N_SIZE * self.N_SUB_PARTICLE, field.K))
@@ -76,8 +75,6 @@ class Neighborhood_C:
         for m in range(self.N_SIZE):
             idx_edge = int(my_topology.relation[index][m])
             for j in range(self.N_SUB_PARTICLE):
-                #print("m = {}, j = {}".format(m,j))
-                #print("idx_egde = ", idx_edge)
                 self.POS[m * self.N_SUB_PARTICLE + j] = self.my_swarm[idx_edge].POS[j]
                 self.VEL[m * self.N_SUB_PARTICLE + j] = self.my_swarm[idx_edge].VEL[j]
                 self.FIT[m * self.N_SUB_PARTICLE + j] = self.my_swarm[idx_edge].FIT[j]
