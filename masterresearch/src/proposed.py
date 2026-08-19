@@ -25,14 +25,6 @@ class MASTER_A(MOPSO):
         # 近傍粒子群とサブアーカイブの初期化
         self.init_neighbors()
 
-        """
-        self.neighbors = [None] * self.N
-        self.sub_arc_MOPSO = [None] * self.N
-        for i in range(self.N):
-            self.neighbors[i] = Neighborhood(self.sw_MOPSO, i, self.field, self.my_topology)
-            self.sub_arc_MOPSO[i] = Archive(self.neighbors[i].POS, self.neighbors[i].FIT, self.NA_MAX, self.field.D, self.field.K)
-        """
-
         # FPO粒子群とアーカイブの初期化
         self.sw_FPO = PredatorsSenior(self.N, self.field)
         self.arc_FPO = Archive(self.sw_FPO.POS, self.sw_FPO.FIT, self.NA_MAX, self.field.D, self.field.K)
@@ -99,8 +91,8 @@ class MASTER_B(MASTER_A):
 class MASTER_C(MOPSO):
     def __init__(self, params: dict[str, Any], problem: Problem, topology_dict: dict[str, Any]) -> None:
         super().__init__(params, problem)
-        self.N_SUB_SWARM = params["N_SUB_SWARM"]  # サブ群の個数
-        self.N_SUB_PARTICLE = self.N // self.N_SUB_SWARM  # サブ群を構成する粒子の数
+        self.N_SUB_SWARM = params["N_SUB_SWARM"]  # サブ粒子群の個数
+        self.N_SUB_PARTICLE = self.N // self.N_SUB_SWARM  # サブ粒子群を構成する粒子の数
 
         # トポロジーの初期化
         self.my_topology = Topology(self.N_SUB_SWARM, topology_dict["N_SIZE"], topology_dict["name"])

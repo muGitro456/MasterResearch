@@ -1,4 +1,4 @@
-"""粒子群最適化（PSO）の基底エージェントクラス。"""
+"""多目的粒子群最適化（MOPSO）の基底エージェントクラス。"""
 from __future__ import annotations
 
 import copy

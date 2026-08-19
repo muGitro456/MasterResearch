@@ -1,7 +1,7 @@
-# PSO / FPO アルゴリズムのパラメータ設定。
+# MOPSO / FPO アルゴリズムのパラメータ設定。
 # 意味の詳細は README.md の「パラメータ」表も参照。
 N: 100                          # 粒子数
-N_SUB_SWARM: 50                 # サブ群数 (MASTER_C用)
+N_SUB_SWARM: 50                 # サブ粒子群数 (MASTER_C用)
 N_ARCHIVE_MAX: 150              # アーカイブ最大サイズ
 GENERATION_MAX: 200              # 最大世代数
 INERTIA: 0.9                    # 慣性係数 W

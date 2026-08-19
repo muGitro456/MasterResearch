@@ -1,7 +1,7 @@
 # MasterResearch
 
 修士研究で使用した多目的最適化アルゴリズムの実装・実験プログラム群です。  
-粒子群最適化 (PSO) をベースに、捕食者行動 (FPO) やトポロジー構造を組み合わせた独自手法の提案と性能比較を行っています。
+多目的粒子群最適化 (MOPSO) をベースに、捕食者行動 (FPO) やトポロジー構造を組み合わせた独自手法の提案と性能比較を行っています。
 
 ---
 
@@ -9,26 +9,31 @@
 
 ```
 MasterResearch/
-├── src/                     # アルゴリズムコア
-│   ├── main.py              # エントリポイント・実験制御
-│   ├── field.py             # 探索空間・テスト問題の定義
-│   ├── agent.py             # 粒子・粒子群クラス (Swarm, Predators, Neighborhood)
-│   ├── agent_subs.py        # サブ粒子群クラス (MASTER_C用)
-│   ├── archive.py           # パレートフロント管理 (Archive)
-│   ├── topology.py          # 粒子間トポロジーの定義
-│   ├── related.py           # 既存手法の実装 (MOPSO, FPO-MOPSO, SENIOR)
-│   ├── proposed.py          # 提案手法の実装 (MASTER_A/B/C)
-│   ├── metrics.py           # 評価指標計算 (被覆率・RNI)
-│   ├── logger.py            # 粒子情報の記録
-│   ├── record_writer.py     # 結果の CSV/Excel 出力
-│   └── property/
-│       ├── parameters.json  # アルゴリズムパラメータ
-│       ├── methods.json     # 手法番号とクラス名のマッピング
-│       ├── functions.json   # ベンチマーク関数の設定
-│       └── topologies.json  # トポロジーの設定
-└── tools/                   # 単独実行スクリプト
-    ├── metrics_evaluator.py # メトリクス計算ツール (CLI)
-    └── graph_drawer.py      # グラフ描画ツール
+├── masterresearch/            # アルゴリズム本体パッケージ
+│   ├── __main__.py             # CLI エントリポイント (masterresearch コマンド)
+│   ├── simulation.py            # 実験制御 (run_simulation)
+│   ├── src/                    # MOPSO アルゴリズムのコアロジック
+│   │   ├── field.py             # 探索空間・テスト問題の定義
+│   │   ├── agent.py             # 粒子・粒子群クラス (Swarm, Predators, Neighborhood)
+│   │   ├── agent_subs.py        # サブ粒子群クラス (MASTER_C用)
+│   │   ├── archive.py           # パレートフロント管理 (Archive)
+│   │   ├── topology.py          # 粒子間トポロジーの定義
+│   │   ├── related.py           # 関連手法の実装 (MOPSO, FPO-MOPSO, SENIOR)
+│   │   └── proposed.py          # 提案手法の実装 (MASTER_A/B/C)
+│   ├── utils/                  # 設定読み込み・記録・評価指標などの共通ユーティリティ
+│   │   ├── config_loader.py     # configs/*.yaml の読み込み (importlib.resources)
+│   │   ├── metrics.py           # 評価指標計算 (被覆率・RNI)
+│   │   ├── logger.py            # 粒子情報の記録
+│   │   ├── record_writer.py     # 結果の CSV 出力
+│   │   └── paths.py             # 出力先ディレクトリ・ログファイルのデフォルトパス
+│   └── configs/
+│       ├── parameters.yaml      # アルゴリズムパラメータ
+│       ├── methods.yaml         # 手法番号とクラス名のマッピング
+│       ├── functions.yaml       # ベンチマーク関数の設定
+│       └── topologies.yaml      # トポロジーの設定
+└── tools/                      # 単独実行スクリプト
+    ├── metrics_evaluator.py     # メトリクス計算ツール (CLI)
+    └── graph_drawer.py          # 粒子軌跡アニメーション描画ツール
 ```
 
 ---
@@ -37,22 +42,22 @@ MasterResearch/
 
 | 番号 | クラス名 | 区分 | 概要 |
 |:----:|---------|:----:|------|
-| 1 | `MOPSO` | 既存 | 標準的な多目的粒子群最適化 |
-| 2 | `FPOMOPSO` | 既存 | MOPSOに捕食者群 (FPO) を統合 |
-| 3 | `SENIOR` | 既存 | FPO-MOPSOの捕食者に自己最善項を追加 |
+| 1 | `MOPSO` | 関連 | 標準的な多目的粒子群最適化 |
+| 2 | `FPOMOPSO` | 関連 | MOPSOに捕食者群 (FPO) を統合 |
+| 3 | `SENIOR` | 関連 | FPO-MOPSOの捕食者に自己最善項を追加 |
 | 4 | `MASTER_A` | **提案** | 近傍トポロジー＋FPO統合 (粒子単位の近傍) |
 | 5 | `MASTER_B` | **提案** | MASTER_Aの別バリエーション |
-| 6 | `MASTER_C` | **提案** | 群を複数のサブ群に分割しトポロジーで接続 |
+| 6 | `MASTER_C` | **提案** | 粒子群を複数のサブ粒子群に分割しトポロジーで接続 |
 
 ### 手法の継承関係
 
 ```
-MOPSO (既存)
-  └─ FPOMOPSO (既存)  : + 捕食者群 (FPO) を並行稼働しアーカイブ統合
-      └─ SENIOR (既存): 捕食者に自己最善項を追加
+MOPSO
+  └─ FPOMOPSO : + 捕食者群 (FPO) を並行稼働しアーカイブ統合
+      └─ SENIOR : 捕食者に自己最善項を追加
           └─ MASTER_A (提案): + 粒子単位の近傍トポロジーを導入
               └─ MASTER_B (提案): MASTER_Aの実験的変形
-  MASTER_C (提案): 粒子群をサブ群に分割 → サブ群間をトポロジーで接続 + FPO
+  MASTER_C (提案): 粒子群をサブ粒子群に分割 → サブ粒子群間をトポロジーで接続 + FPO
 ```
 
 ---
@@ -60,8 +65,8 @@ MOPSO (既存)
 ## 処理フロー
 
 ```
-main.py
-  ├─ JSONファイル読み込み (methods, functions, parameters, topologies)
+masterresearch (CLI) → simulation.run_simulation()
+  ├─ YAMLファイル読み込み (methods, functions, parameters, topologies)
   ├─ Problem生成 (ベンチマーク関数の設定)
   └─ TRIAL=100回ループ
        ├─ アルゴリズムオブジェクト生成
@@ -78,9 +83,9 @@ main.py
             └─ [提案手法] FPO群の更新 & アーカイブ統合
 
   └─ 結果記録
-       ├─ CSV : パレートフロントの座標 (../backLog/ 以下)
-       ├─ Excel: 評価指標の統計 (平均・最大・最小・中央値)
-       └─ LINE Notify: 完了通知
+       ├─ CSV : パレートフロントの座標・評価指標の統計 (デフォルト backLog/ 以下)
+       ├─ CSV : 実行記録 (デフォルト execution_log.csv)
+       └─ notify-send: 完了通知 (未対応環境ではターミナル出力にフォールバック)
 ```
 
 ---
@@ -99,7 +104,7 @@ main.py
 | `RIVAL_AWARENESS` | 2.0 | 競合相手係数 C3 (FPO) |
 | `LOCAL_AWARENESS` | 2.0 | 近傍最善係数 C5 |
 
-パラメータは [`src/property/parameters.json`](src/property/parameters.json) で変更できます。
+パラメータは [`masterresearch/configs/parameters.yaml`](masterresearch/configs/parameters.yaml) で変更できます。
 
 ---
 
@@ -139,24 +144,54 @@ main.py
 
 ## 実行方法
 
+`masterresearch` パッケージをインストールすると `masterresearch` コマンドが使えます（`python -m masterresearch` でも同様に実行可能）。
+
 ```bash
-cd src
-python main.py
-# オプション: コメントを付けて実行
-python main.py -C "実験コメント"
-```
+pip install -e .
 
-`main.py` 内の `instruction_set` に手法番号・関数番号・トポロジー番号を指定します。
+# インタラクティブモード: 手法・関数・トポロジーを対話式に選択
+masterresearch
 
-```python
+# マニュアルモード: 実行コード（手法番号+関数番号[+トポロジー番号]）を直接指定
 # 例: MASTER_C (6) + 関数9 + トポロジー1
-instruction_set = ["691"]
+masterresearch --manual 691
 
-# 例: 複数条件を一括実行
-instruction_set = ["41", "42", "43", "51", "52", "53"]
+# 複数条件を一括実行
+masterresearch --manual 41 42 43 51 52 53
+
+# オプション: 試行回数・コメント・出力先を指定
+masterresearch --manual 691 --trial 50 --comment "実験コメント" --output-dir backLog --log-file execution_log.csv
 ```
 
-実行前に `プログラム実行記録管理シート.xlsx` が閉じられていることを確認してください。
+| オプション | デフォルト | 意味 |
+|-----------|:----------:|------|
+| `--manual CODE [CODE ...]` | なし（省略時はインタラクティブモード） | 実行コード（手法番号+関数番号[+トポロジー番号]）を1つ以上指定 |
+| `--trial` | 100 | 試行回数 |
+| `--comment`, `-C` | `特になし` | 実行コメント |
+| `--output-dir` | `backLog` | パレートフロント等の出力先ディレクトリ |
+| `--log-file` | `execution_log.csv` | 実行記録CSVのパス |
+
+実行前に `--log-file` で指定したCSV（デフォルト `execution_log.csv`）が他プロセスで開かれていないことを確認してください。ロックされている場合はエラーを表示して終了します。
+
+---
+
+## ツール
+
+### メトリクス計算 (`tools/metrics_evaluator.py`)
+
+```bash
+python tools/metrics_evaluator.py --rni    # 2つのパレートフロントの RNI を比較
+python tools/metrics_evaluator.py --val    # ディレクトリ内全パレートフロントの被覆率を評価
+python tools/metrics_evaluator.py --rniall # 1つのパレートフロントと複数の RNI を比較
+```
+
+### 粒子軌跡アニメーション (`tools/graph_drawer.py`)
+
+```bash
+python tools/graph_drawer.py <trajectory_best.csv のパス> [フレーム間隔ms]
+```
+
+`masterresearch` 実行時に自動保存される `trajectory_best.csv`（出力先ディレクトリ配下）を読み込み、世代ごとの粒子位置を `matplotlib.animation` でアニメーション再生します。
 
 ---
 
@@ -164,6 +199,6 @@ instruction_set = ["41", "42", "43", "51", "52", "53"]
 
 - `numpy`
 - `pandas`
-- `openpyxl`
 - `tqdm`
-- `requests`
+- `matplotlib`
+- `pyyaml`

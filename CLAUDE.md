@@ -38,7 +38,7 @@
 
 # ディレクトリ構成
 - `masterresearch/`: アルゴリズム本体パッケージ（`masterresearch` CLI または `python -m masterresearch` から実行。直接 `python simulation.py` では動作しない）
-    - `masterresearch/src/`: PSOアルゴリズムのコアロジック（agent, archive, field, topology, related, proposed など）
+    - `masterresearch/src/`: MOPSOアルゴリズムのコアロジック（agent, archive, field, topology, related, proposed など）
     - `masterresearch/utils/`: 設定読み込み・記録・評価指標などの共通ユーティリティ
 - `tools/`: 単独で実行するスクリプト（他モジュールからimportされない）
 - `tests/`: pytest テストスイート

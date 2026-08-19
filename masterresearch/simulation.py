@@ -1,4 +1,4 @@
-"""PSO シミュレーションのコアロジック。"""
+"""MOPSO シミュレーションのコアロジック。"""
 # Pythonパッケージのインポート
 import datetime
 import os
