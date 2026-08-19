@@ -45,7 +45,7 @@ class TestParseArgs:
         args = entry._parse_args()
         assert args.manual is None
         assert args.trial == 100
-        assert args.comment == 'ただのテスト'
+        assert args.comment == '特になし'
 
     def test_manual_single(self, mocker):
         mocker.patch('sys.argv', ['masterresearch', '--manual', '691'])
@@ -115,11 +115,11 @@ class TestParseArgs:
 
 
 class TestCli:
-    def test_manual_mode_dispatches_run_main(self, mocker):
-        """--manual CODE calls run_main with correct args"""
+    def test_manual_mode_dispatches_run_simulation(self, mocker):
+        """--manual CODE calls run_simulation with correct args"""
         import src.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
-        mock_run = mocker.patch.object(entry, 'run_main')
+        mock_run = mocker.patch.object(entry, 'run_simulation')
         mock_notify = mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', ['masterresearch', '--manual', '691', '--trial', '1', '--comment', 'test'])
         entry.cli()
@@ -127,10 +127,10 @@ class TestCli:
         mock_notify.assert_called_once()
 
     def test_manual_mode_multiple_codes(self, mocker):
-        """--manual with multiple codes calls run_main for each"""
+        """--manual with multiple codes calls run_simulation for each"""
         import src.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
-        mock_run = mocker.patch.object(entry, 'run_main')
+        mock_run = mocker.patch.object(entry, 'run_simulation')
         mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', ['masterresearch', '--manual', '27', '37'])
         entry.cli()
@@ -141,34 +141,34 @@ class TestCli:
         import src.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mock_select = mocker.patch.object(entry, '_select_interactive', return_value=['691'])
-        mock_run = mocker.patch.object(entry, 'run_main')
+        mock_run = mocker.patch.object(entry, 'run_simulation')
         mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', ['masterresearch'])
         entry.cli()
         mock_select.assert_called_once()
-        mock_run.assert_called_once_with('691', trial=100, comment='ただのテスト', output_dir='backLog', log_file='execution_log.csv')
+        mock_run.assert_called_once_with('691', trial=100, comment='特になし', output_dir='backLog', log_file='execution_log.csv')
 
     def test_notify_called_after_all_runs(self, mocker):
         """_notify fires exactly once, after all instructions complete"""
         import src.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
-        mocker.patch.object(entry, 'run_main')
+        mocker.patch.object(entry, 'run_simulation')
         mock_notify = mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', ['masterresearch', '--manual', '27', '37'])
         entry.cli()
         mock_notify.assert_called_once_with('プログラムの実行が完了しました')
 
-    def test_custom_output_dir_and_log_file_passed_to_run_main(self, mocker):
-        """--output-dir/--log-file are forwarded to run_main"""
+    def test_custom_output_dir_and_log_file_passed_to_run_simulation(self, mocker):
+        """--output-dir/--log-file are forwarded to run_simulation"""
         import src.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
-        mock_run = mocker.patch.object(entry, 'run_main')
+        mock_run = mocker.patch.object(entry, 'run_simulation')
         mocker.patch.object(entry, '_notify')
         mocker.patch('sys.argv', [
             'masterresearch', '--manual', '691', '--output-dir', 'my_results', '--log-file', 'my_log.csv'
         ])
         entry.cli()
-        mock_run.assert_called_once_with('691', trial=100, comment='ただのテスト', output_dir='my_results', log_file='my_log.csv')
+        mock_run.assert_called_once_with('691', trial=100, comment='特になし', output_dir='my_results', log_file='my_log.csv')
 
     def test_locked_file_uses_custom_log_file_path(self, mocker, capsys):
         """file_is_locked is checked against --log-file, not a hardcoded default"""
@@ -183,7 +183,7 @@ class TestCli:
         """When the record CSV is locked, cli() prints an error and never runs or notifies"""
         import src.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=True)
-        mock_run = mocker.patch.object(entry, 'run_main')
+        mock_run = mocker.patch.object(entry, 'run_simulation')
         mock_notify = mocker.patch.object(entry, '_notify')
         mocker.patch.object(entry, '_select_interactive')
         mocker.patch('sys.argv', ['masterresearch', '--manual', '691'])

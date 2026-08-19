@@ -16,8 +16,8 @@ from .proposed import MASTER_A, MASTER_B, MASTER_C
 from .related import FPOMOPSO, MOPSO, SENIOR
 
 
-def main(instruction: str, trial: int = 100, comment: str = 'ただのテスト',
-         output_dir: str = DEFAULT_OUTPUT_DIR, log_file: str = DEFAULT_LOG_FILE) -> None:
+def run_simulation(instruction: str, trial: int = 100, comment: str = '特になし',
+                    output_dir: str = DEFAULT_OUTPUT_DIR, log_file: str = DEFAULT_LOG_FILE) -> None:
     TRIAL = trial       # 試行回数
     isDebugged = False  # 粒子の動きを確認したいか
     isPlotted = True    # パレートフロントの情報を記録したいか

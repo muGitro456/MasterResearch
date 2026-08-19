@@ -61,7 +61,7 @@ class TestMain:
         mocker.patch('src.simulation.record_writer.write_record')
         mocker.patch('src.simulation.record_writer.write_trajectory')
 
-        simulation.main("19")  # comment/trial はデフォルト値
+        simulation.run_simulation("19")  # comment/trial はデフォルト値
 
         mock_class.assert_called()
 
@@ -73,7 +73,7 @@ class TestMain:
         mocker.patch('src.simulation.record_writer.write_record')
         mocker.patch('src.simulation.record_writer.write_trajectory')
 
-        simulation.main("49")
+        simulation.run_simulation("49")
 
         mock_class.assert_called()
 
@@ -85,7 +85,7 @@ class TestMain:
         mocker.patch('src.simulation.record_writer.write_record')
         mocker.patch('src.simulation.record_writer.write_trajectory')
 
-        simulation.main("491", comment='my_comment')
+        simulation.run_simulation("491", comment='my_comment')
 
         mock_class.assert_called()
 
@@ -97,7 +97,7 @@ class TestMain:
         mocker.patch('src.simulation.record_writer.write_record')
         mocker.patch('src.simulation.record_writer.write_trajectory')
 
-        simulation.main("691")
+        simulation.run_simulation("691")
 
         captured = capsys.readouterr()
         assert "N_SUBSWARM" in captured.out
@@ -111,7 +111,7 @@ class TestMain:
         mock_write_record = mocker.patch('src.simulation.record_writer.write_record')
         mocker.patch('src.simulation.record_writer.write_trajectory')
 
-        simulation.main("19", output_dir='custom_dir', log_file='custom_log.csv')
+        simulation.run_simulation("19", output_dir='custom_dir', log_file='custom_log.csv')
 
         assert mock_write4plot.call_args.kwargs['output_dir'] == 'custom_dir'
         assert mock_write_record.call_args.args[0] == 'custom_log.csv'
@@ -124,7 +124,7 @@ class TestMain:
         mock_write_record = mocker.patch('src.simulation.record_writer.write_record')
         mocker.patch('src.simulation.record_writer.write_trajectory')
 
-        simulation.main("19")
+        simulation.run_simulation("19")
 
         assert mock_write4plot.call_args.kwargs['output_dir'] == 'backLog'
         assert mock_write_record.call_args.args[0] == 'execution_log.csv'

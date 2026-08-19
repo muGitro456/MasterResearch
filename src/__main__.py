@@ -4,8 +4,7 @@ import subprocess
 
 from .config_loader import load_yaml
 from .paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
-from .simulation import file_is_locked
-from .simulation import main as run_main
+from .simulation import file_is_locked, run_simulation
 
 
 def _select_interactive() -> list[str]:
@@ -67,7 +66,7 @@ def _parse_args() -> argparse.Namespace:
         help='マニュアルモード: 実行コードを1つ以上指定 (例: --manual 691 27 37)'
     )
     parser.add_argument('--trial', type=int, default=100, help='試行回数 (デフォルト: 100)')
-    parser.add_argument('--comment', '-C', default='ただのテスト', help='実行コメント')
+    parser.add_argument('--comment', '-C', default='特になし', help='実行コメント')
     parser.add_argument('--output-dir', type=_non_empty_path, default=DEFAULT_OUTPUT_DIR,
                          help=f'パレートフロント等の出力先ディレクトリ (デフォルト: {DEFAULT_OUTPUT_DIR})')
     parser.add_argument('--log-file', type=_non_empty_path, default=DEFAULT_LOG_FILE,
@@ -88,8 +87,8 @@ def cli() -> None:
         instructions = _select_interactive()
 
     for instruction in instructions:
-        run_main(instruction, trial=args.trial, comment=args.comment,
-                  output_dir=args.output_dir, log_file=args.log_file)
+        run_simulation(instruction, trial=args.trial, comment=args.comment,
+                        output_dir=args.output_dir, log_file=args.log_file)
 
     _notify("プログラムの実行が完了しました")
 
