@@ -59,7 +59,7 @@ def _non_empty_path(value: str) -> str:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description='MasterResearch PSO最適化シミュレーター'
+        description='MasterResearch MOPSO最適化シミュレーター'
     )
     parser.add_argument(
         '--manual', nargs='+', metavar='CODE',
