@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from . import logger as db
-from .config_loader import load_yaml
+from ..utils import logger as db
+from ..utils.config_loader import load_yaml
 
 if TYPE_CHECKING:
     from .agent import Swarm

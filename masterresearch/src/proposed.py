@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 from tqdm import tqdm
 
-from . import logger as db
+from ..utils import logger as db
 from .agent import Neighborhood, PredatorsSenior
 from .agent_subs import Neighborhood_C, SubSwarm
 from .archive import Archive

@@ -3,7 +3,7 @@ from typing import Any
 
 from tqdm import tqdm
 
-from . import logger as db
+from ..utils import logger as db
 from .agent import Predators, PredatorsSenior, Swarm
 from .archive import Archive
 from .field import Problem, SearchSpace

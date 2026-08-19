@@ -1,7 +1,7 @@
 import numpy as np
 
-from src.metrics import cover_rate
-from src import metrics
+from masterresearch.utils.metrics import cover_rate
+from masterresearch.utils import metrics
 
 
 def test_normal_full_coverage():

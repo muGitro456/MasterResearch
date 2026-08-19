@@ -1,4 +1,4 @@
-from src.config_loader import load_yaml
+from masterresearch.utils.config_loader import load_yaml
 
 
 class TestLoadYaml:

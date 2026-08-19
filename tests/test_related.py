@@ -1,7 +1,7 @@
 import numpy as np
-from src.field import Problem
-from src.archive import Archive
-from src.related import MOPSO, FPOMOPSO, SENIOR
+from masterresearch.src.field import Problem
+from masterresearch.src.archive import Archive
+from masterresearch.src.related import MOPSO, FPOMOPSO, SENIOR
 
 
 class TestMOPSOSimulation:

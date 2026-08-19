@@ -12,4 +12,4 @@ ignore = [
 "tests/**/*.py" = ["F401"]  # テストファイルは未使用インポートを許容
 
 [lint.isort]
-known-first-party = ["src"]
+known-first-party = ["masterresearch"]

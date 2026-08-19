@@ -4,18 +4,18 @@ API リファレンス
 .. toctree::
    :maxdepth: 1
 
-   src.agent
-   src.agent_subs
-   src.archive
-   src.config_loader
-   src.field
-   src.logger
-   src.metrics
-   src.paths
-   src.proposed
-   src.record_writer
-   src.related
-   src.simulation
-   src.topology
+   masterresearch.simulation
+   masterresearch.src.agent
+   masterresearch.src.agent_subs
+   masterresearch.src.archive
+   masterresearch.src.field
+   masterresearch.src.proposed
+   masterresearch.src.related
+   masterresearch.src.topology
+   masterresearch.utils.config_loader
+   masterresearch.utils.logger
+   masterresearch.utils.metrics
+   masterresearch.utils.paths
+   masterresearch.utils.record_writer
    tools.database
    tools.graph_drawer

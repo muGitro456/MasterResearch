@@ -1,7 +1,0 @@
-src.agent_subs
-==============
-
-.. automodule:: src.agent_subs
-   :members:
-   :undoc-members:
-   :show-inheritance:

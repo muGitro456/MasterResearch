@@ -1,7 +1,7 @@
-"""Tests for src/__main__.py CLI entry point."""
+"""Tests for masterresearch/__main__.py CLI entry point."""
 import sys
 from unittest.mock import patch
-import src.__main__ as entry
+import masterresearch.__main__ as entry
 
 
 _MOCK_METHODS = {
@@ -117,7 +117,7 @@ class TestParseArgs:
 class TestCli:
     def test_manual_mode_dispatches_run_simulation(self, mocker):
         """--manual CODE calls run_simulation with correct args"""
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mock_run = mocker.patch.object(entry, 'run_simulation')
         mock_notify = mocker.patch.object(entry, '_notify')
@@ -128,7 +128,7 @@ class TestCli:
 
     def test_manual_mode_multiple_codes(self, mocker):
         """--manual with multiple codes calls run_simulation for each"""
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mock_run = mocker.patch.object(entry, 'run_simulation')
         mocker.patch.object(entry, '_notify')
@@ -138,7 +138,7 @@ class TestCli:
 
     def test_interactive_mode_routes_to_select(self, mocker):
         """No --manual flag calls _select_interactive"""
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mock_select = mocker.patch.object(entry, '_select_interactive', return_value=['691'])
         mock_run = mocker.patch.object(entry, 'run_simulation')
@@ -150,7 +150,7 @@ class TestCli:
 
     def test_notify_called_after_all_runs(self, mocker):
         """_notify fires exactly once, after all instructions complete"""
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mocker.patch.object(entry, 'run_simulation')
         mock_notify = mocker.patch.object(entry, '_notify')
@@ -160,7 +160,7 @@ class TestCli:
 
     def test_custom_output_dir_and_log_file_passed_to_run_simulation(self, mocker):
         """--output-dir/--log-file are forwarded to run_simulation"""
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=False)
         mock_run = mocker.patch.object(entry, 'run_simulation')
         mocker.patch.object(entry, '_notify')
@@ -172,7 +172,7 @@ class TestCli:
 
     def test_locked_file_uses_custom_log_file_path(self, mocker, capsys):
         """file_is_locked is checked against --log-file, not a hardcoded default"""
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=True)
         mocker.patch('sys.argv', ['masterresearch', '--manual', '691', '--log-file', 'my_log.csv'])
         entry.cli()
@@ -181,7 +181,7 @@ class TestCli:
 
     def test_locked_file_aborts_without_running(self, mocker, capsys):
         """When the record CSV is locked, cli() prints an error and never runs or notifies"""
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mocker.patch.object(entry, 'file_is_locked', return_value=True)
         mock_run = mocker.patch.object(entry, 'run_simulation')
         mock_notify = mocker.patch.object(entry, '_notify')

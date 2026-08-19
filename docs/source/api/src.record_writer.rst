@@ -1,7 +1,0 @@
-src.record_writer
-=================
-
-.. automodule:: src.record_writer
-   :members:
-   :undoc-members:
-   :show-inheritance:

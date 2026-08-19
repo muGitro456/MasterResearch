@@ -6,7 +6,7 @@ from typing import Any
 
 import yaml
 
-_PACKAGE = 'src'  # NOTE: src パッケージ名を変更する場合はここも更新すること
+_PACKAGE = 'masterresearch'  # NOTE: トップレベルパッケージ名を変更する場合はここも更新すること
 
 
 def load_yaml(filename: str) -> dict[str, Any]:

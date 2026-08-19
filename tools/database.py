@@ -8,8 +8,8 @@ Usage:
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
-from metrics import evaluation, rni
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from masterresearch.utils.metrics import evaluation, rni
 
 
 def print_rni_result(pf1_name: str, pf2_name: str, result: tuple[float, float]) -> None:

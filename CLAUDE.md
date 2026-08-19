@@ -37,7 +37,9 @@
 9. 問題なければpull requestを承認して、mainブランチに変更を取り込む
 
 # ディレクトリ構成
-- `src/`: アルゴリズムのコアロジック（`masterresearch` CLI または `python -m src` から実行。直接 `python simulation.py` では動作しない）
+- `masterresearch/`: アルゴリズム本体パッケージ（`masterresearch` CLI または `python -m masterresearch` から実行。直接 `python simulation.py` では動作しない）
+    - `masterresearch/src/`: PSOアルゴリズムのコアロジック（agent, archive, field, topology, related, proposed など）
+    - `masterresearch/utils/`: 設定読み込み・記録・評価指標などの共通ユーティリティ
 - `tools/`: 単独で実行するスクリプト（他モジュールからimportされない）
 - `tests/`: pytest テストスイート
 

@@ -2,9 +2,9 @@
 import argparse
 import subprocess
 
-from .config_loader import load_yaml
-from .paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
 from .simulation import file_is_locked, run_simulation
+from .utils.config_loader import load_yaml
+from .utils.paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
 
 
 def _select_interactive() -> list[str]:

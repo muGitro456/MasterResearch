@@ -8,12 +8,12 @@ import numpy as np
 from tqdm import tqdm
 
 # 自作パッケージのインポート
-from . import logger, metrics, record_writer
-from .config_loader import load_yaml
-from .field import Problem
-from .paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
-from .proposed import MASTER_A, MASTER_B, MASTER_C
-from .related import FPOMOPSO, MOPSO, SENIOR
+from .src.field import Problem
+from .src.proposed import MASTER_A, MASTER_B, MASTER_C
+from .src.related import FPOMOPSO, MOPSO, SENIOR
+from .utils import logger, metrics, record_writer
+from .utils.config_loader import load_yaml
+from .utils.paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
 
 
 def run_simulation(instruction: str, trial: int = 100, comment: str = '特になし',
