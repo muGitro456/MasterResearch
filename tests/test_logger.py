@@ -1,5 +1,5 @@
 import numpy as np
-from src import logger
+from masterresearch.utils import logger
 
 
 class TestLoggerResetLog:

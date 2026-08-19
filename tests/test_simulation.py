@@ -1,5 +1,5 @@
 import numpy as np
-from src import simulation
+from masterresearch import simulation
 
 
 class TestFileIsLocked:
@@ -55,49 +55,49 @@ class TestMain:
 
     def test_normal_instruction_2char_meth1_no_C_flag(self, mocker):
         mock_class = self._make_mock_algo(mocker)
-        mocker.patch('src.simulation.MOPSO', mock_class)
-        mocker.patch('src.simulation.record_writer.write4plot', return_value='test_dir/')
-        mocker.patch('src.simulation.metrics.evaluation')
-        mocker.patch('src.simulation.record_writer.write_record')
-        mocker.patch('src.simulation.record_writer.write_trajectory')
+        mocker.patch('masterresearch.simulation.MOPSO', mock_class)
+        mocker.patch('masterresearch.simulation.record_writer.write4plot', return_value='test_dir/')
+        mocker.patch('masterresearch.simulation.metrics.evaluation')
+        mocker.patch('masterresearch.simulation.record_writer.write_record')
+        mocker.patch('masterresearch.simulation.record_writer.write_trajectory')
 
-        simulation.main("19")  # comment/trial はデフォルト値
+        simulation.run_simulation("19")  # comment/trial はデフォルト値
 
         mock_class.assert_called()
 
     def test_normal_instruction_2char_meth4_is_master_a(self, mocker):
         mock_class = self._make_mock_algo(mocker)
-        mocker.patch('src.simulation.MASTER_A', mock_class)
-        mocker.patch('src.simulation.record_writer.write4plot', return_value='test_dir/')
-        mocker.patch('src.simulation.metrics.evaluation')
-        mocker.patch('src.simulation.record_writer.write_record')
-        mocker.patch('src.simulation.record_writer.write_trajectory')
+        mocker.patch('masterresearch.simulation.MASTER_A', mock_class)
+        mocker.patch('masterresearch.simulation.record_writer.write4plot', return_value='test_dir/')
+        mocker.patch('masterresearch.simulation.metrics.evaluation')
+        mocker.patch('masterresearch.simulation.record_writer.write_record')
+        mocker.patch('masterresearch.simulation.record_writer.write_trajectory')
 
-        simulation.main("49")
+        simulation.run_simulation("49")
 
         mock_class.assert_called()
 
     def test_normal_instruction_3char_with_comment_arg(self, mocker):
         mock_class = self._make_mock_algo(mocker)
-        mocker.patch('src.simulation.MASTER_A', mock_class)
-        mocker.patch('src.simulation.record_writer.write4plot', return_value='test_dir/')
-        mocker.patch('src.simulation.metrics.evaluation')
-        mocker.patch('src.simulation.record_writer.write_record')
-        mocker.patch('src.simulation.record_writer.write_trajectory')
+        mocker.patch('masterresearch.simulation.MASTER_A', mock_class)
+        mocker.patch('masterresearch.simulation.record_writer.write4plot', return_value='test_dir/')
+        mocker.patch('masterresearch.simulation.metrics.evaluation')
+        mocker.patch('masterresearch.simulation.record_writer.write_record')
+        mocker.patch('masterresearch.simulation.record_writer.write_trajectory')
 
-        simulation.main("491", comment='my_comment')
+        simulation.run_simulation("491", comment='my_comment')
 
         mock_class.assert_called()
 
     def test_normal_instruction_3char_meth6_prints_subswarm(self, mocker, capsys):
         mock_class = self._make_mock_algo(mocker)
-        mocker.patch('src.simulation.MASTER_C', mock_class)
-        mocker.patch('src.simulation.record_writer.write4plot', return_value='test_dir/')
-        mocker.patch('src.simulation.metrics.evaluation')
-        mocker.patch('src.simulation.record_writer.write_record')
-        mocker.patch('src.simulation.record_writer.write_trajectory')
+        mocker.patch('masterresearch.simulation.MASTER_C', mock_class)
+        mocker.patch('masterresearch.simulation.record_writer.write4plot', return_value='test_dir/')
+        mocker.patch('masterresearch.simulation.metrics.evaluation')
+        mocker.patch('masterresearch.simulation.record_writer.write_record')
+        mocker.patch('masterresearch.simulation.record_writer.write_trajectory')
 
-        simulation.main("691")
+        simulation.run_simulation("691")
 
         captured = capsys.readouterr()
         assert "N_SUBSWARM" in captured.out
@@ -105,26 +105,26 @@ class TestMain:
 
     def test_normal_passes_output_dir_and_log_file_through(self, mocker):
         mock_class = self._make_mock_algo(mocker)
-        mocker.patch('src.simulation.MOPSO', mock_class)
-        mock_write4plot = mocker.patch('src.simulation.record_writer.write4plot', return_value='custom_dir/')
-        mocker.patch('src.simulation.metrics.evaluation')
-        mock_write_record = mocker.patch('src.simulation.record_writer.write_record')
-        mocker.patch('src.simulation.record_writer.write_trajectory')
+        mocker.patch('masterresearch.simulation.MOPSO', mock_class)
+        mock_write4plot = mocker.patch('masterresearch.simulation.record_writer.write4plot', return_value='custom_dir/')
+        mocker.patch('masterresearch.simulation.metrics.evaluation')
+        mock_write_record = mocker.patch('masterresearch.simulation.record_writer.write_record')
+        mocker.patch('masterresearch.simulation.record_writer.write_trajectory')
 
-        simulation.main("19", output_dir='custom_dir', log_file='custom_log.csv')
+        simulation.run_simulation("19", output_dir='custom_dir', log_file='custom_log.csv')
 
         assert mock_write4plot.call_args.kwargs['output_dir'] == 'custom_dir'
         assert mock_write_record.call_args.args[0] == 'custom_log.csv'
 
     def test_normal_default_output_dir_and_log_file(self, mocker):
         mock_class = self._make_mock_algo(mocker)
-        mocker.patch('src.simulation.MOPSO', mock_class)
-        mock_write4plot = mocker.patch('src.simulation.record_writer.write4plot', return_value='backLog/')
-        mocker.patch('src.simulation.metrics.evaluation')
-        mock_write_record = mocker.patch('src.simulation.record_writer.write_record')
-        mocker.patch('src.simulation.record_writer.write_trajectory')
+        mocker.patch('masterresearch.simulation.MOPSO', mock_class)
+        mock_write4plot = mocker.patch('masterresearch.simulation.record_writer.write4plot', return_value='backLog/')
+        mocker.patch('masterresearch.simulation.metrics.evaluation')
+        mock_write_record = mocker.patch('masterresearch.simulation.record_writer.write_record')
+        mocker.patch('masterresearch.simulation.record_writer.write_trajectory')
 
-        simulation.main("19")
+        simulation.run_simulation("19")
 
         assert mock_write4plot.call_args.kwargs['output_dir'] == 'backLog'
         assert mock_write_record.call_args.args[0] == 'execution_log.csv'
@@ -132,7 +132,7 @@ class TestMain:
 
 class TestNotify:
     def test_normal_calls_notify_send(self, mocker):
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mock_run = mocker.patch('subprocess.run')
         entry._notify("テスト完了")
         mock_run.assert_called_once_with(
@@ -141,7 +141,7 @@ class TestNotify:
         )
 
     def test_normal_fallback_when_notify_send_missing(self, mocker, capsys):
-        import src.__main__ as entry
+        import masterresearch.__main__ as entry
         mocker.patch('subprocess.run', side_effect=FileNotFoundError)
         entry._notify("テスト完了")
         captured = capsys.readouterr()

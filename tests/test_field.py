@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from src.field import SearchSpace, Problem
+from masterresearch.src.field import SearchSpace, Problem
 
 
 @pytest.fixture
