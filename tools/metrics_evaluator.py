@@ -1,9 +1,9 @@
 """RNI・被覆率などのメトリクスをコマンドラインから計算するツール。
 
 Usage:
-    python tools/database.py --rni    # 2つのパレートフロントの RNI を比較
-    python tools/database.py --val    # ディレクトリ内全パレートフロントの被覆率を評価
-    python tools/database.py --rniall # 1つのパレートフロントと複数の RNI を比較
+    python tools/metrics_evaluator.py --rni    # 2つのパレートフロントの RNI を比較
+    python tools/metrics_evaluator.py --val    # ディレクトリ内全パレートフロントの被覆率を評価
+    python tools/metrics_evaluator.py --rniall # 1つのパレートフロントと複数の RNI を比較
 """
 import os
 import sys
@@ -18,11 +18,11 @@ def print_rni_result(pf1_name: str, pf2_name: str, result: tuple[float, float]) 
     print("【{}】: RNI = {:.3f} ({:.1f}%)".format(pf1_name, rni1, rni1 * 100))
     print("【{}】: RNI = {:.3f} ({:.1f}%)".format(pf2_name, rni2, rni2 * 100))
     if rni1 > rni2:
-        print("→ 前者の方がイイ!")
+        print("→ 前者が優勢")
     elif rni1 < rni2:
-        print("→ 後者の方がイイ!")
+        print("→ 後者が優勢")
     else:
-        print("→ 同率!")
+        print("→ 同率（互角）")
 
 
 if __name__ == "__main__":
