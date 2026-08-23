@@ -7,6 +7,13 @@ import pandas as pd
 
 
 def animate_trajectory(csv_path: str, interval: int = 200) -> None:
+    """`trajectory_best.csv` （`record_writer.write_trajectory` の出力）を読み込み、
+    パレートフロントの世代変化をアニメーション表示する。
+
+    Args:
+        csv_path: `generation`, `point_idx`, `f1`, `f2`[, `f3`] 列を持つCSVのパス。
+        interval: フレーム間隔 [ms]。
+    """
     df = pd.read_csv(csv_path)
     generations = sorted(df['generation'].unique())
 

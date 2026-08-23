@@ -10,6 +10,18 @@ _PACKAGE = 'masterresearch'  # NOTE: トップレベルパッケージ名を変�
 
 
 def load_yaml(filename: str) -> dict[str, Any]:
+    """`masterresearch/configs/` 配下の YAML ファイルを読み込む。
+
+    `importlib.resources` を使うため、カレントディレクトリに依存せず、
+    インストール済みパッケージ（wheel 経由も含む）からでも読み込める。
+
+    Args:
+        filename: `configs/` ディレクトリ内のファイル名
+            （例: `'parameters.yaml'`, `'methods.yaml'`）。
+
+    Returns:
+        YAML の内容を変換した辞書。
+    """
     path = resources.files(_PACKAGE).joinpath('configs').joinpath(filename)
     with path.open('r', encoding='utf-8') as f:
         data: dict[str, Any] = yaml.safe_load(f)

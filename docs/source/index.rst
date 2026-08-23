@@ -1,7 +1,7 @@
 MasterResearch
 ==============
 
-多目的PSO最適化アルゴリズムのシミュレーションパッケージ。
+MOPSOアルゴリズムのシミュレーションパッケージ。
 
 .. toctree::
    :maxdepth: 2

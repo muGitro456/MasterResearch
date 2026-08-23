@@ -31,9 +31,10 @@ MasterResearch/
 │       ├── methods.yaml         # 手法番号とクラス名のマッピング
 │       ├── functions.yaml       # ベンチマーク関数の設定
 │       └── topologies.yaml      # トポロジーの設定
-└── tools/                      # 単独実行スクリプト
-    ├── metrics_evaluator.py     # メトリクス計算ツール (CLI)
-    └── graph_drawer.py          # 粒子軌跡アニメーション描画ツール
+├── tools/                      # 単独実行スクリプト
+│   ├── metrics_evaluator.py     # メトリクス計算ツール (CLI)
+│   └── graph_drawer.py          # 粒子軌跡アニメーション描画ツール
+└── docs/                       # Sphinx API ドキュメント (docs/source 配下がソース)
 ```
 
 ---
@@ -147,20 +148,22 @@ masterresearch (CLI) → simulation.run_simulation()
 `masterresearch` パッケージをインストールすると `masterresearch` コマンドが使えます（`python -m masterresearch` でも同様に実行可能）。
 
 ```bash
-pip install -e .
+$ python -m venv .venv
+$ source .venv/bin/activate  # Windows は .venv\Scripts\activate
+$ pip install -e .
 
 # インタラクティブモード: 手法・関数・トポロジーを対話式に選択
-masterresearch
+$ masterresearch
 
 # マニュアルモード: 実行コード（手法番号+関数番号[+トポロジー番号]）を直接指定
 # 例: MASTER_C (6) + 関数9 + トポロジー1
-masterresearch --manual 691
+$ masterresearch --manual 691
 
 # 複数条件を一括実行
-masterresearch --manual 41 42 43 51 52 53
+$ masterresearch --manual 41 42 43 51 52 53
 
 # オプション: 試行回数・コメント・出力先を指定
-masterresearch --manual 691 --trial 50 --comment "実験コメント" --output-dir backLog --log-file execution_log.csv
+$ masterresearch --manual 691 --trial 50 --comment "実験コメント" --output-dir backLog --log-file execution_log.csv
 ```
 
 | オプション | デフォルト | 意味 |
@@ -180,18 +183,33 @@ masterresearch --manual 691 --trial 50 --comment "実験コメント" --output-d
 ### メトリクス計算 (`tools/metrics_evaluator.py`)
 
 ```bash
-python tools/metrics_evaluator.py --rni    # 2つのパレートフロントの RNI を比較
-python tools/metrics_evaluator.py --val    # ディレクトリ内全パレートフロントの被覆率を評価
-python tools/metrics_evaluator.py --rniall # 1つのパレートフロントと複数の RNI を比較
+$ python tools/metrics_evaluator.py --rni    # 2つのパレートフロントの RNI を比較
+$ python tools/metrics_evaluator.py --val    # ディレクトリ内全パレートフロントの被覆率を評価
+$ python tools/metrics_evaluator.py --rniall # 1つのパレートフロントと複数の RNI を比較
 ```
 
 ### 粒子軌跡アニメーション (`tools/graph_drawer.py`)
 
 ```bash
-python tools/graph_drawer.py <trajectory_best.csv のパス> [フレーム間隔ms]
+$ python tools/graph_drawer.py <trajectory_best.csv のパス> [フレーム間隔ms]
 ```
 
 `masterresearch` 実行時に自動保存される `trajectory_best.csv`（出力先ディレクトリ配下）を読み込み、世代ごとの粒子位置を `matplotlib.animation` でアニメーション再生します。
+
+---
+
+## ドキュメント (Sphinx)
+
+各モジュールの API リファレンスは Sphinx で生成しています。ソースは `docs/source/`、
+ビルド成果物は `docs/_build/`（gitignore 対象、コミットしない）です。
+
+```bash
+# 「実行方法」で作成した仮想環境を有効化した状態で実行してください
+$ pip install -e ".[docs]"   # sphinx, furo をインストール
+$ sphinx-build -b html docs/source docs/_build/html
+```
+
+生成された `docs/_build/html/index.html` をブラウザで開くと閲覧できます。
 
 ---
 
@@ -202,3 +220,8 @@ python tools/graph_drawer.py <trajectory_best.csv のパス> [フレーム間隔
 - `tqdm`
 - `matplotlib`
 - `pyyaml`
+
+開発用（ドキュメントビルド）:
+
+- `sphinx`
+- `furo`

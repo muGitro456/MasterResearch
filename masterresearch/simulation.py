@@ -18,6 +18,22 @@ from .utils.paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
 
 def run_simulation(instruction: str, trial: int = 100, comment: str = '特になし',
                     output_dir: str = DEFAULT_OUTPUT_DIR, log_file: str = DEFAULT_LOG_FILE) -> None:
+    """指定された実行コードでシミュレーションを実行し、結果を記録する。
+
+    `instruction` から手法・ベンチマーク関数・トポロジー（該当する場合）を
+    決定し、`trial` 回試行を繰り返す。試行終了後、パレートフロントの軌跡を
+    記録するための追加実行を1回行い、実行記録CSVに結果を追記する。
+
+    Args:
+        instruction: 2〜3桁の実行コード（例: `'27'`, `'691'`）。1桁目が手法番号、
+            2桁目がベンチマーク関数番号。3桁指定した場合は3桁目がトポロジー番号となる
+            （手法番号によらず、桁数のみで判定される）。2桁の場合、MASTER_A（手法4）は
+            リングトポロジー（近傍数5）、それ以外はトポロジーなしがデフォルトとなる。
+        trial: 試行回数。
+        comment: 実行記録CSVに残すコメント。
+        output_dir: パレートフロント等の出力先ディレクトリ。
+        log_file: 実行記録CSVのパス。
+    """
     TRIAL = trial       # 試行回数
     isDebugged = False  # 粒子の動きを確認したいか
     isPlotted = True    # パレートフロントの情報を記録したいか
@@ -97,6 +113,17 @@ def run_simulation(instruction: str, trial: int = 100, comment: str = '特にな
     record_writer.write_record(log_file, TRIAL, startTime, (FUNC_NAME, METH_NAME, TOPO_NAME), comment, processing_time_ave, param_dict["N_SUB_SWARM"], numOfGBs, cr)
 
 def file_is_locked(filepath: str) -> bool:
+    """指定ファイルが他プロセスに開かれている（追記できない）かどうかを判定する。
+
+    実行記録CSVをExcel等で開いたまま実行してしまうケースを事前に検出するために使う。
+
+    Args:
+        filepath: チェック対象のファイルパス。
+
+    Returns:
+        ファイルが存在し、かつ追記モードで開けない場合に `True`。
+        まだ存在しないファイル（親ディレクトリ未作成等）はロックとみなさず `False`。
+    """
     if not os.path.exists(filepath):
         return False  # まだ存在しない（≒ 親ディレクトリ未作成）。ロックではない。
                        # open(filepath, 'a') は未存在ファイルを作成してしまうため、ここで弾いて副作用を避ける

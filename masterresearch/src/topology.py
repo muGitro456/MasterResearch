@@ -3,12 +3,45 @@ import numpy as np
 
 
 class Topology:
+    """粒子（またはサブ粒子群）間の近傍関係（トポロジー）を表すクラス。
+
+    `topologies.yaml` の `name` に応じてリング型・ノイマン型・円筒型・
+    六角形型・格子型のいずれかで近傍関係を構築する。
+
+    Attributes:
+        N: 要素数（粒子数またはサブ粒子群数）。
+        N_SIZE: リング型トポロジーでの近傍数。
+        relation: `relation[i]` が要素 `i` の近傍インデックスのリスト。
+    """
+
     def __init__(self, N: int, N_SIZE: int, name: str) -> None:
+        """指定されたトポロジー名で近傍関係を構築する。
+
+        Args:
+            N: 要素数（粒子数またはサブ粒子群数）。
+            N_SIZE: リング型トポロジーでの近傍数。
+            name: トポロジー名（`topologies.yaml` の `name`）。
+        """
         self.N = N
         self.N_SIZE = N_SIZE
         self.relation = self.select_edge(name)
 
     def select_edge(self, name: str) -> list[list[int]]:
+        """トポロジー名に応じて各要素の近傍インデックス一覧を構築する。
+
+        リング型以外（ノイマン型・円筒型・六角形型・格子型）は `N` が
+        平方数であることを前提に、格子状に配置した要素の上下左右
+        （必要に応じてトーラス状にラップアラウンド）を近傍とする。
+
+        Args:
+            name: トポロジー名。
+
+        Returns:
+            `relation[i]` が要素 `i` の近傍インデックスのリストであるようなリスト。
+
+        Raises:
+            ValueError: `name` が未知の場合。
+        """
         N_sqrt = np.sqrt(self.N)
         relation: list[list[int]] = [[] for _ in range(self.N)]  # 初期化
 
