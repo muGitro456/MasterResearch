@@ -9,4 +9,5 @@ MOPSOアルゴリズムのシミュレーションパッケージ。
 
    quickstart
    algorithms/index
+   results_guide
    api/index

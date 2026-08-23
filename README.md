@@ -34,7 +34,7 @@ MasterResearch/
 ├── tools/                      # 単独実行スクリプト
 │   ├── metrics_evaluator.py     # メトリクス計算ツール (CLI)
 │   └── graph_drawer.py          # 粒子軌跡アニメーション描画ツール
-└── docs/                       # Sphinx API ドキュメント (docs/source 配下がソース)
+└── docs/                       # Sphinx ドキュメント (docs/source 配下がソース、APIリファレンス以外にクイックスタート・アルゴリズム解説・実験結果の読み方なども含む)
 ```
 
 ---
@@ -202,7 +202,7 @@ $ python tools/graph_drawer.py <trajectory_best.csv のパス> [フレーム間�
 
 ## ドキュメント (Sphinx)
 
-各モジュールの API リファレンスは Sphinx で生成しています。ソースは `docs/source/`、
+各モジュールの API リファレンスに加え、クイックスタート・アルゴリズムの理論的解説（PSOから提案手法MASTER_A/B/Cまで）・実験結果の読み方といったページも Sphinx で生成しています。ソースは `docs/source/`、
 ビルド成果物は `docs/_build/`（gitignore 対象、コミットしない）です。
 
 ```bash
