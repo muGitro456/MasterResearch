@@ -31,8 +31,6 @@ class MASTER_A(MOPSO):
         """
         super().__init__(params, problem)
 
-        self.N_SIZE = topology_dict["N_SIZE"]
-
         # トポロジーの初期化
         self.my_topology = Topology(self.N, topology_dict["N_SIZE"], topology_dict["name"])
 
@@ -89,27 +87,6 @@ class MASTER_A(MOPSO):
             db.store_trajectory(self.arc_MASTER.fit_gb)
 
         return self.arc_MASTER
-
-    def union_neighbors(self, sub_arcs: list[Archive], index: int, topology: Topology) -> tuple[np.ndarray, np.ndarray]:
-        """指定インデックスの近傍に属するサブアーカイブをすべて結合する。
-
-        Args:
-            sub_arcs: 全粒子分のサブアーカイブのリスト。
-            index: 中心となる粒子のインデックス。
-            topology: 近傍関係を定義するトポロジー。
-
-        Returns:
-            結合後の位置と評価値のタプル `(POS_TEMP, FIT_TEMP)`。
-        """
-        POS_TEMP = sub_arcs[index].pos_gb
-        FIT_TEMP = sub_arcs[index].fit_gb
-
-        for m in range(1, self.N_SIZE):
-            idx_edge = int(topology.relation[index][m])
-            POS_TEMP = np.vstack((POS_TEMP, sub_arcs[idx_edge].pos_gb))
-            FIT_TEMP = np.vstack((FIT_TEMP, sub_arcs[idx_edge].fit_gb))
-
-        return POS_TEMP, FIT_TEMP
 
 class MASTER_B(MASTER_A):
     """現状は `MASTER_A` と同一の挙動（トポロジー種別の使い分けのために独立した手法として定義）。"""
@@ -185,8 +162,9 @@ class MASTER_C(MOPSO):
     def simulation(self) -> Archive:
         """`GEN_MAX` 世代分、サブ粒子群単位の近傍探索・FPO探索・アーカイブ統合を繰り返す。
 
-        各サブ粒子群のローカルリーダー（LBEST）は、トポロジー上で近傍にある
-        5個のサブアーカイブを一時的に結合したアーカイブから選出する。
+        各サブ粒子群のローカルリーダー（LBEST）は、トポロジー上の近傍サブアーカイブ
+        （個数はトポロジーの種類・位置により変動する）を一時的に結合した
+        アーカイブから選出する。
 
         Returns:
             サブ粒子群探索と FPO の非劣解を統合した最終世代のアーカイブ。
@@ -197,17 +175,9 @@ class MASTER_C(MOPSO):
             for i in range(self.N_SUB_SWARM):
                 # 各サブアーカイブにおけるリーダーの中から最も良いものをLBESTとする.
 
-                sub_arcs_pos = np.vstack((self.sub_arc_MOPSO[int(self.my_topology.relation[i][0])].pos_gb, \
-                                          self.sub_arc_MOPSO[int(self.my_topology.relation[i][1])].pos_gb, \
-                                          self.sub_arc_MOPSO[int(self.my_topology.relation[i][2])].pos_gb, \
-                                          self.sub_arc_MOPSO[int(self.my_topology.relation[i][3])].pos_gb, \
-                                          self.sub_arc_MOPSO[int(self.my_topology.relation[i][4])].pos_gb))
-
-                sub_arcs_fit = np.vstack((self.sub_arc_MOPSO[int(self.my_topology.relation[i][0])].fit_gb, \
-                                          self.sub_arc_MOPSO[int(self.my_topology.relation[i][1])].fit_gb, \
-                                          self.sub_arc_MOPSO[int(self.my_topology.relation[i][2])].fit_gb, \
-                                          self.sub_arc_MOPSO[int(self.my_topology.relation[i][3])].fit_gb, \
-                                          self.sub_arc_MOPSO[int(self.my_topology.relation[i][4])].fit_gb))
+                neighbor_indices = [int(idx) for idx in self.my_topology.relation[i]]
+                sub_arcs_pos = np.vstack([self.sub_arc_MOPSO[idx].pos_gb for idx in neighbor_indices])
+                sub_arcs_fit = np.vstack([self.sub_arc_MOPSO[idx].fit_gb for idx in neighbor_indices])
 
                 sub_arcs = Archive(sub_arcs_pos, sub_arcs_fit, self.NA_MAX, self.field.D, self.field.K)
                 lbest = sub_arcs.select_leader()

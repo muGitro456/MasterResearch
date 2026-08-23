@@ -71,6 +71,22 @@ class TestPredators:
         assert fp.shape == (5,)
         assert np.all(fp > 0)
 
+    def test_calc_fit_predator_handles_zero_range_objective(self, predators):
+        # 全捕食者がある目的関数で同一値を取ると (max - min == 0)、
+        # ゼロ除算が発生してはいけない(他の目的関数の情報も失われてはいけない)
+        predators.FIT = np.array([
+            [1.0, 5.0],
+            [2.0, 5.0],
+            [3.0, 5.0],
+            [4.0, 5.0],
+            [5.0, 5.0],
+        ])
+        with np.errstate(divide="raise", invalid="raise"):
+            fp = predators.calc_fit_predator()
+        assert np.all(np.isfinite(fp))
+        # 目的1(定数)は寄与ゼロとして扱われ、目的0の差だけが反映されるべき
+        assert len(set(fp)) > 1
+
     def test_normal_update_rivals(self, predators):
         np.random.seed(42)
         predators.update_rivals()

@@ -150,7 +150,7 @@ class Archive:
                 front_down = np.append(np.inf, fit_gb_sorted[:-1, k])
                 cd = cd + np.abs(front_up - front_down)
         if NA > 3:
-            cd[0] = np.max(cd[1:-2])
+            cd[0] = np.max(cd[1:-1])
         elif NA > 2:
             cd[0] = cd[1]
         else:

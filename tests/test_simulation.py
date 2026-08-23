@@ -77,6 +77,21 @@ class TestMain:
 
         mock_class.assert_called()
 
+    def test_normal_instruction_3char_meth4_forces_ring_topology(self, mocker):
+        # MASTER_A(手法4)は3桁指定でも常にリングトポロジー固定であるべき。
+        # "492" は3桁目にNeumann(2)を指定しているが、無視されなければならない。
+        mock_class = self._make_mock_algo(mocker)
+        mocker.patch('masterresearch.simulation.MASTER_A', mock_class)
+        mocker.patch('masterresearch.simulation.record_writer.write4plot', return_value='test_dir/')
+        mocker.patch('masterresearch.simulation.metrics.evaluation')
+        mocker.patch('masterresearch.simulation.record_writer.write_record')
+        mocker.patch('masterresearch.simulation.record_writer.write_trajectory')
+
+        simulation.run_simulation("492")
+
+        topo_arg = mock_class.call_args.args[2]
+        assert topo_arg["name"] == "Ring_5"
+
     def test_normal_instruction_3char_with_comment_arg(self, mocker):
         mock_class = self._make_mock_algo(mocker)
         mocker.patch('masterresearch.simulation.MASTER_A', mock_class)

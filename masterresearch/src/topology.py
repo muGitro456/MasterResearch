@@ -60,8 +60,9 @@ class Topology:
                     edge[CENTER] = i
                     edge[UP] = (i - N_sqrt) % self.N
                     edge[DOWN] = (i + N_sqrt) % self.N
-                    edge[LEFT] = (i - 1) % N_sqrt
-                    edge[RIGHT] = (i + 1) % N_sqrt
+                    row, col = i // N_sqrt, i % N_sqrt
+                    edge[LEFT] = row * N_sqrt + (col - 1) % N_sqrt
+                    edge[RIGHT] = row * N_sqrt + (col + 1) % N_sqrt
                     relation[i] = edge
 
             case "Cylinder":  # 円筒トポロジーの場合
@@ -112,8 +113,8 @@ class Topology:
                     if i - N_sqrt >= 0:  # iが上端でなければ
                          edge.append((i - N_sqrt) % self.N)
 
-                    if i + N_sqrt >= self.N:  # iが下端でなければ
-                         edge.append((i + N_sqrt) % self.N)
+                    if i + N_sqrt < self.N:  # iが下端でなければ
+                         edge.append(i + N_sqrt)
 
                     if i % N_sqrt != 0:  # iが左端でなければ
                         edge.append(i - 1)

@@ -115,6 +115,18 @@ class TestArchiveCalcCrowdingDistance:
         assert len(cd) == 4
         assert cd[0] == cd[-1]
 
+    def test_na5_boundary_distance_uses_all_interior_points(self):
+        # 境界解(cd[0], cd[-1])は「内側の全ての点」の混雑度の最大値であるべき
+        # (NSGA-IIの境界解=最大混雑度扱いという定義)。
+        # 末尾から2点を除外すると、最大値を持つ内側の点(index=3)が
+        # 計算から漏れてしまう。
+        pos = np.array([[0.0, 0.0]] * 5)
+        fit_gb = np.array([[0, 10], [1, 9.5], [2, 9], [3, 1], [4, 0]], dtype=float)
+        arc = Archive(pos, fit_gb, NA_MAX=10, D=2, K=2)
+        cd = arc.calc_crowding_distance(fit_gb)
+        assert cd[0] == 11
+        assert cd[-1] == 11
+
 
 class TestArchiveCalcCoverRate:
     def test_normal_k2(self):

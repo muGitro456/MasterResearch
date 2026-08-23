@@ -186,6 +186,9 @@ class Predators(Swarm):
     def calc_fit_predator(self) -> np.ndarray:
         """各捕食者の捕食適合度を、目的ごとに正規化した評価値の総和の逆数として算出する。
 
+        全捕食者の評価値が一致する目的（レンジ0）はゼロ除算を避けるため
+        正規化の対象から除外し、差別化に寄与しないものとして無視する。
+
         Returns:
             捕食適合度の配列 (N,)。値が大きいほど「良い」捕食者。
         """
@@ -193,7 +196,9 @@ class Predators(Swarm):
         FIT_PRED: np.ndarray = np.zeros(self.N)
         for i in range(self.N):
             for k in range(K):
-                FIT_PRED[i] += self.FIT[i, k] / (np.max(self.FIT[:, k]) - np.min(self.FIT[:, k]))
+                fit_range = np.max(self.FIT[:, k]) - np.min(self.FIT[:, k])
+                if fit_range != 0:  # 全個体が同値の目的は差別化に寄与しないため無視する
+                    FIT_PRED[i] += self.FIT[i, k] / fit_range
 
         FIT_PRED = 1 / FIT_PRED
         return FIT_PRED

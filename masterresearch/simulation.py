@@ -26,9 +26,10 @@ def run_simulation(instruction: str, trial: int = 100, comment: str = '特にな
 
     Args:
         instruction: 2〜3桁の実行コード（例: `'27'`, `'691'`）。1桁目が手法番号、
-            2桁目がベンチマーク関数番号。3桁指定した場合は3桁目がトポロジー番号となる
-            （手法番号によらず、桁数のみで判定される）。2桁の場合、MASTER_A（手法4）は
-            リングトポロジー（近傍数5）、それ以外はトポロジーなしがデフォルトとなる。
+            2桁目がベンチマーク関数番号。3桁指定した場合は3桁目がトポロジー番号となるが、
+            MASTER_A（手法4）は常にリングトポロジー（近傍数5）固定であり、3桁目の指定は
+            手法番号に関わらず無視される。2桁の場合、MASTER_Aはリングトポロジー、
+            それ以外はトポロジーなしがデフォルトとなる。
         trial: 試行回数。
         comment: 実行記録CSVに残すコメント。
         output_dir: パレートフロント等の出力先ディレクトリ。
@@ -45,14 +46,14 @@ def run_simulation(instruction: str, trial: int = 100, comment: str = '特にな
 
     startTime = datetime.datetime.now()  # プログラムの開始時間
 
-    if len(instruction) == 3:  # MASTER_BまたはMASTER_Cメソッドを使用するのであれば
+    if len(instruction) == 3:
         METH_NUM, FUNC_NUM, TOPO_NUM = instruction[0], instruction[1], instruction[2]  # メソッド番号、関数番号、トポロジー番号の３つに分離する
     else:
         METH_NUM, FUNC_NUM = instruction[0], instruction[1]  # メソッド番号と関数番号の２つに分離する
-        if METH_NUM == "4":  # MASTER_Aメソッドであれば
-            TOPO_NUM = "1"  # リングトポロジー(近傍数5)
-        else:
-            TOPO_NUM = "0"  # トポロジーなし
+        TOPO_NUM = "0"  # トポロジーなし
+
+    if METH_NUM == "4":  # MASTER_Aメソッドはリングトポロジー固定のため、桁数によらず指定を上書きする
+        TOPO_NUM = "1"  # リングトポロジー(近傍数5)
 
     METH_NAME = meth_dict[METH_NUM]["name"]  # 使用メソッドの名前
     TOPO_NAME = topo_dict[TOPO_NUM]["name"]  # トポロジーの名前
