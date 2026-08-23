@@ -8,6 +8,7 @@ from .utils.paths import DEFAULT_LOG_FILE, DEFAULT_OUTPUT_DIR
 
 
 def _select_interactive() -> list[str]:
+    """対話形式で手法・ベンチマーク関数・トポロジーを選ばせ、実行コードを1件返す。"""
     methods = load_yaml('methods.yaml')
     functions = load_yaml('functions.yaml')
     topologies = load_yaml('topologies.yaml')
@@ -42,6 +43,7 @@ def _select_interactive() -> list[str]:
 
 
 def _notify(message: str) -> None:
+    """デスクトップ通知を送る。`notify-send` が使えない環境ではターミナルに出力する。"""
     try:
         subprocess.run(
             ['notify-send', 'MasterResearch', message],
@@ -52,12 +54,14 @@ def _notify(message: str) -> None:
 
 
 def _non_empty_path(value: str) -> str:
+    """argparse の type 関数。空文字列（および空白のみ）を拒否する。"""
     if not value.strip():
         raise argparse.ArgumentTypeError('空文字列は指定できません')
     return value
 
 
 def _parse_args() -> argparse.Namespace:
+    """コマンドライン引数をパースする。"""
     parser = argparse.ArgumentParser(
         description='MasterResearch MOPSO最適化シミュレーター'
     )
@@ -75,6 +79,12 @@ def _parse_args() -> argparse.Namespace:
 
 
 def cli() -> None:
+    """`masterresearch` コマンドのエントリポイント。
+
+    `--manual` が指定されていればその実行コード群を、指定がなければ
+    対話モードで選択した1件を順に実行する。実行記録CSVがロックされている
+    場合は実行前にエラー終了する。全実行が終わるとデスクトップ通知を送る。
+    """
     args = _parse_args()
 
     if file_is_locked(args.log_file):

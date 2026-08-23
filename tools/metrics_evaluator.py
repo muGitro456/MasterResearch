@@ -13,6 +13,13 @@ from masterresearch.utils.metrics import evaluation, rni
 
 
 def print_rni_result(pf1_name: str, pf2_name: str, result: tuple[float, float]) -> None:
+    """`metrics.rni` の結果を、優勢な側の判定つきで整形して表示する。
+
+    Args:
+        pf1_name: 1つ目のパレートフロントファイル名（表示用）。
+        pf2_name: 2つ目のパレートフロントファイル名（表示用）。
+        result: `metrics.rni` の戻り値 `(rni1, rni2)`。
+    """
     rni1, rni2 = result
     print("\n---RNI 比較結果---")
     print("【{}】: RNI = {:.3f} ({:.1f}%)".format(pf1_name, rni1, rni1 * 100))

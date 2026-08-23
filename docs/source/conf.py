@@ -12,7 +12,8 @@ sys.path.insert(0, _tools_dir)
 project = 'MasterResearch'
 copyright = '2026, muGitro456'
 author = 'muGitro456'
-release = '0.1.0'
+with open(os.path.join(_project_root, 'VERSION.txt'), encoding='utf-8') as _f:
+    release = _f.read().strip()  # pyproject.toml (dynamic version) と同じ VERSION.txt を参照
 
 extensions = [
     'sphinx.ext.autodoc',

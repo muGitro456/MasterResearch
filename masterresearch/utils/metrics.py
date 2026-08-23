@@ -9,6 +9,18 @@ import pandas as pd
 
 
 def cover_rate(arcEval: np.ndarray, divNum: int) -> float:
+    """パレートフロント（2目的）の被覆率を計算する。
+
+    目的空間を `divNum` 分割したグリッドのうち、解が1つ以上存在する
+    区画の割合を目的ごとに求め、その平均を返す。
+
+    Args:
+        arcEval: 評価対象のパレートフロント（列0, 1が各目的の評価値）。
+        divNum: 各目的軸の分割数。
+
+    Returns:
+        被覆率（0〜1）。
+    """
     K = arcEval.shape[1]
     min_f = np.array([np.min(arcEval[:, 0]), np.min(arcEval[:, 1])])
     max_f = np.array([np.max(arcEval[:, 0]), np.max(arcEval[:, 1])])
@@ -33,6 +45,12 @@ def cover_rate(arcEval: np.ndarray, divNum: int) -> float:
 
 
 def display(pfs: list, idx: np.ndarray) -> None:
+    """指標の平均・中央値・最大値・最小値（該当試行番号付き）を表示する。
+
+    Args:
+        pfs: 各試行に対応するパレートフロントファイル名のリスト（表示のみに使用）。
+        idx: 試行ごとの指標値。
+    """
     print("Average is {}".format(np.average(idx)))
     print("Median  is {}".format(np.median(idx)))
     print("Maximum is {}, No.{} ({})".format(np.max(idx), np.argmax(idx)+1, pfs[np.argmax(idx)]))
@@ -40,6 +58,16 @@ def display(pfs: list, idx: np.ndarray) -> None:
 
 
 def evaluation(targetDir: str, *indicators: np.ndarray) -> None:
+    """解の個数・被覆率の統計を計算して表示する。
+
+    `indicators` が渡されない場合は `targetDir` 内の `front_*.csv` を
+    読み込んで解の個数・被覆率を計算し直す（`tools/metrics_evaluator.py --val` 用）。
+    渡された場合はその値をそのまま使う（`simulation.run_simulation` 用）。
+
+    Args:
+        targetDir: パレートフロントCSV（`front_*.csv`）が格納されたディレクトリ。
+        *indicators: 省略可。`(numOfSols, cr)` の順で試行ごとの指標配列を渡す。
+    """
     paretoFronts = sorted(glob.glob(targetDir + '/front_*.csv'))
     numOfSols = np.zeros(len(paretoFronts))
     cr = np.zeros(len(paretoFronts))
@@ -63,6 +91,18 @@ def evaluation(targetDir: str, *indicators: np.ndarray) -> None:
 
 
 def rni(dFName1: str, dFName2: str) -> tuple[float, float]:
+    """2つのパレートフロントを統合したフロント中での、各手法由来の解の比率（RNI）を計算する。
+
+    2つの解集合を結合してパレートフロントを再構築し、その中に生き残った
+    解のうちどちらの手法由来かで比率を求める。値が大きい側がより優勢。
+
+    Args:
+        dFName1: 1つ目のパレートフロントCSVファイルのパス。
+        dFName2: 2つ目のパレートフロントCSVファイルのパス。
+
+    Returns:
+        `(dFName1側の比率, dFName2側の比率)`。
+    """
     df1 = pd.read_csv(dFName1, index_col=0)
     df2 = pd.read_csv(dFName2, index_col=0)
     n1 = df1.values
