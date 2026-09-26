@@ -1,0 +1,26 @@
+# 相対パスは compose.yaml のあるディレクトリ基準で解決される。
+# サブディレクトリから実行しても出力先は常にリポジトリ直下の backLog/ になる。
+services:
+  sim:
+    build:
+      context: .
+      target: runtime
+    image: masterresearch:runtime
+    volumes:
+      - ./backLog:/app/backLog
+    stdin_open: true
+    tty: true
+
+  test:
+    build:
+      context: .
+      target: dev
+    image: masterresearch:dev
+
+  docs:
+    build:
+      context: .
+      target: docs
+    image: masterresearch:docs
+    ports:
+      - "8080:80"

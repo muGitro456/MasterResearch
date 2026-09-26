@@ -180,6 +180,39 @@ $ masterresearch --manual 691 --trial 50 --comment "実験コメント" --output
 
 ---
 
+## Docker での実行方法
+
+Docker と Docker Compose があれば、Python 環境を用意せずに実行できます。
+コマンドはリポジトリ直下で実行します（`compose.yaml` 内のパスは `compose.yaml` 基準で解決されるため、サブディレクトリから実行しても出力先は常にリポジトリ直下の `backLog/` になります）。
+
+```bash
+# 初回のみ: 出力先を作成（無いと Docker が root 所有で作成し、書き込めなくなる）
+$ mkdir -p backLog
+
+# シミュレーション（インタラクティブモード）
+$ docker compose run --rm sim
+
+# シミュレーション（マニュアルモード）
+$ docker compose run --rm sim --manual 691 --trial 50
+
+# テスト
+$ docker compose run --rm test
+
+# ドキュメント（http://localhost:8080 で閲覧、Ctrl+C で停止）
+$ docker compose up docs
+
+# ソースを変更した後は --build を付けて再ビルドする
+$ docker compose run --rm --build sim --manual 11
+```
+
+- 結果は `backLog/`、実行記録は `backLog/execution_log.csv` に出力されます
+- コンテナのタイムゾーンは `Asia/Tokyo` です
+- コンテナは UID 1000 のユーザーで動作します。ホストの UID が異なる場合は `docker compose run --rm --user "$(id -u):$(id -g)" sim ...` を使います
+- UID が一致しない場合、権限エラーであっても「`backLog/execution_log.csv` がロックされています」と表示されます。このエラーが出たら、まず `backLog/` の所有者と UID を確認してください
+- `notify-send` はコンテナ内では使えないため、完了通知はターミナルに表示されます
+
+---
+
 ## ツール
 
 ### メトリクス計算 (`tools/metrics_evaluator.py`)

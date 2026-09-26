@@ -28,6 +28,22 @@ RUN pip install --no-cache-dir --no-deps -e .
 
 CMD ["pytest"]
 
+# ---- docs-build: Sphinx で HTML を生成（autodoc のため依存ライブラリ入りの base から派生） ----
+FROM base AS docs-build
+
+RUN pip install --no-cache-dir sphinx==8.1.3 furo==2025.12.19
+
+COPY VERSION.txt ./
+COPY masterresearch ./masterresearch
+COPY tools ./tools
+COPY docs ./docs
+RUN sphinx-build -W -b html docs/source docs/_build/html
+
+# ---- docs: 生成済み HTML だけを nginx で配信（Python は含まない） ----
+FROM nginx:stable-alpine AS docs
+
+COPY --from=docs-build /app/docs/_build/html /usr/share/nginx/html
+
 # ---- runtime: シミュレーション実行用（最終ステージ = --target 省略時のデフォルト） ----
 FROM base AS runtime
 
