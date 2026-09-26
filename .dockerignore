@@ -1,0 +1,22 @@
+# ビルドコンテキストから除外するもの（イメージサイズ・ビルド速度・キャッシュ安定性のため）
+.git
+.github
+.venv
+.worktrees
+.superpowers
+.claude
+backLog
+execution_log.csv
+build
+dist
+*.egg-info
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+docs/_build
+Dockerfile
+.dockerignore
+compose.yaml
