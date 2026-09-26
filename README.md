@@ -180,6 +180,41 @@ $ masterresearch --manual 691 --trial 50 --comment "実験コメント" --output
 
 ---
 
+## Docker での実行方法
+
+Docker と Docker Compose があれば、Python 環境を用意せずに実行できます。
+コマンドはリポジトリ直下で実行します（`compose.yaml` 内のパスは `compose.yaml` 基準で解決されるため、サブディレクトリから実行しても出力先は常にリポジトリ直下の `backLog/` になります）。
+
+```bash
+# 初回のみ: 出力先を作成（無いと Docker が root 所有で作成し、書き込めなくなる）
+$ mkdir -p backLog
+
+# シミュレーション（インタラクティブモード）
+$ docker compose run --rm sim
+
+# シミュレーション（マニュアルモード）
+$ docker compose run --rm sim --manual 691 --trial 50
+
+# テスト
+$ docker compose run --rm test
+
+# ドキュメント（http://localhost:8080 で閲覧、Ctrl+C で停止）
+$ docker compose up docs
+
+# ソースを変更した後は --build を付けて再ビルドする（run / up 共通）
+$ docker compose run --rm --build sim --manual 11
+$ docker compose up --build docs
+```
+
+- 結果は `backLog/`、実行記録は `backLog/execution_log.csv` に出力されます
+- ホストに残るのは `backLog/` 配下だけです。`--output-dir` / `--log-file` で `backLog/` の外を指定すると、コンテナ終了時に結果が消えます
+- コンテナのタイムゾーンは `Asia/Tokyo` です
+- コンテナは UID 1000 のユーザーで動作します。ホストの UID が異なる場合は `docker compose run --rm --user "$(id -u):$(id -g)" sim ...` を使います
+- `backLog/` に書き込めない場合（UID 不一致、`mkdir` し忘れで root 所有になった等）、`PermissionError` または「`backLog/execution_log.csv` がロックされています」と表示されます（後者は実行記録CSVが既に存在する場合）。どちらの場合もまず `backLog/` の所有者と UID を確認してください。root 所有になった場合は `sudo chown -R "$(id -u):$(id -g)" backLog` で戻せます
+- `notify-send` はコンテナ内では使えないため、完了通知はターミナルに表示されます
+
+---
+
 ## ツール
 
 ### メトリクス計算 (`tools/metrics_evaluator.py`)
